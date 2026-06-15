@@ -130,12 +130,26 @@
         .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
 
         .hidden { display: none !important; }
+
+        /* --- Add New Resource Modal Specific Styles --- */
+        .add-modal-content { padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); outline: none; }
+        .form-textarea { height: 100px; resize: none; }
+        .add-fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--accent-color); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(0,212,255,0.4); z-index: 999; cursor: pointer; }
+
 </style>
   </head>
   <body data-theme="light">
 
     <!-- Loader -->
     <div id="loading-spinner-container"><div class="spinner"></div></div>
+
+    <!-- Floating Add Button -->
+    <div id="add-fab-btn" class="add-fab hidden" onclick="openModal('addResourceModal')">
+        <i class="fa-solid fa-plus"></i>
+    </div>
 
     <!-- Redesigned Side Drawer -->
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
@@ -230,6 +244,67 @@
 	  </div>
     </div>
 
+    <!-- Add Resource Modal -->
+    <div class="modal" id="addResourceModal">
+        <div class="modal-box" style="border-radius: 15px;">
+            <div class="payment-header" style="background: var(--surface-color); color: var(--text-color); border-bottom: 1px solid var(--border-color); padding: 15px;">
+                <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem;"><i class="fa-solid fa-plus" style="font-size: 1rem;"></i> Add New Resource / File</h3>
+            </div>
+            <div class="add-modal-content">
+                <div class="form-group">
+                    <label>File Title Name</label>
+                    <input type="text" id="addTitle" class="form-input" placeholder="e.g. Premium Wedding Card">
+                </div>
+                <div class="form-group">
+                    <label>File Description (ফাইলের বিস্তারিত)</label>
+                    <textarea id="addDesc" class="form-input form-textarea" placeholder="এই ফাইল সম্পর্কে বিস্তারিত এখানে লিখুন..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Category Type</label>
+                    <select id="addCat" class="form-input">
+                        <option value="PixelLab">PixelLab</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Poster">Poster</option>
+                        <option value="Social Media">Social Media</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail Image URL</label>
+                    <input type="text" id="addThumb" class="form-input" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label>File Size</label>
+                    <input type="text" id="addSize" class="form-input" placeholder="e.g. 15.4 MB">
+                </div>
+                <div class="form-group">
+                    <label>Price (BDT) [Keep 0 for Free]</label>
+                    <input type="number" id="addPrice" class="form-input" value="0">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-solid fa-download" style="color: #F6921E;"></i> File Download URL</label>
+                    <input type="text" id="addDL" class="form-input" placeholder="Download link">
+                </div>
+                <div class="form-group">
+                    <label><i class="fa-brands fa-youtube" style="color: red;"></i> Tutorial Video URL (YouTube Link)</label>
+                    <input type="text" id="addTutor" class="form-input" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+                <div class="form-group">
+                    <label>Software Required</label>
+                    <input type="text" id="addSoft" class="form-input" value="PixelLab">
+                </div>
+                <div class="form-group">
+                    <label>File Format</label>
+                    <input type="text" id="addFormat" class="form-input" value=".PLP">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 10px; margin-bottom: 20px;">
+                    <button class="main-download-btn" style="background: var(--border-color); flex: 1;" onclick="closeModal('addResourceModal')">Cancel</button>
+                    <button class="main-download-btn" style="background: var(--accent-color); flex: 2;" onclick="saveNewResource()">Add Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Redesigned Payment Modal -->
     <div class="modal" id="paymentModal">
 	  <div class="modal-box">
@@ -307,15 +382,31 @@
                     document.getElementById('siteNameHeader').innerText = v.siteName || "Morad Hasan";
                     document.getElementById('siteHeroTitle').innerHTML = v.heroTitle || "কেমন আছেন <span>❓</span>";
                     document.getElementById('siteHeroDesc').innerText = v.siteDesc || "";
+                    
+                    // প্লাস বাটন শো বা হাইড করার কন্ট্রোল
+                    const fab = document.getElementById('add-fab-btn');
+                    if(v.showAddButton === true) {
+                        fab.classList.remove('hidden');
+                    } else {
+                        fab.classList.add('hidden');
+                    }
                 }
             });
 
             db.ref('categories').on('value', s => {
                 const cont = document.getElementById('catList');
                 cont.innerHTML = `<button class="cat-btn active" onclick="filterCategory('all', this)">All Files</button>`;
-                if(s.val()) Object.values(s.val()).forEach(cat => {
-                    cont.innerHTML += `<button class="cat-btn" onclick="filterCategory('${cat}', this)">${cat}</button>`;
-                });
+                if(s.val()) {
+                    Object.values(s.val()).forEach(cat => {
+                        cont.innerHTML += `<button class="cat-btn" onclick="filterCategory('${cat}', this)">${cat}</button>`;
+                    });
+                    
+                    const sel = document.getElementById('addCat');
+                    sel.innerHTML = "";
+                    Object.values(s.val()).forEach(cat => {
+                        sel.innerHTML += `<option value="${cat}">${cat}</option>`;
+                    });
+                }
             });
 
             db.ref('projects').on('value', s => {
@@ -378,7 +469,6 @@
             document.getElementById('dFormat').innerText = p.fileFormat || ".PLP";
             document.getElementById('dPrice').innerText = p.price > 0 ? "৳" + p.price : "Free";
             
-            // Tutorial Button Handle
             const tBtn = document.getElementById('dTutorBtn');
             if(p.tutorialUrl) {
                 tBtn.classList.remove('hidden');
@@ -387,7 +477,6 @@
                 tBtn.classList.add('hidden');
             }
 
-            // Description Box Handle (At the bottom)
             const dBox = document.getElementById('dDescBox');
             if(p.description) {
                 document.getElementById('dDescText').innerText = p.description;
@@ -473,6 +562,7 @@
         function openChat() { toggleDrawer(false); document.getElementById('chatModal').style.display = 'flex'; }
         function openAbout() { toggleDrawer(false); document.getElementById('aboutModal').style.display = 'flex'; }
         function focusSearch() { document.getElementById('searchInput').focus(); }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
 
         function sendTelegramMsg() {
             const n = document.getElementById('userName').value;
@@ -483,6 +573,32 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ chat_id: CHAT_ID, text: `📩 Support: ${n}\nMsg: ${m}` })
             }).then(res => { if(res.ok) { alert("পাঠানো হয়েছে!"); closeModal('chatModal'); } });
+        }
+
+        function saveNewResource() {
+            const title = document.getElementById('addTitle').value.trim();
+            const desc = document.getElementById('addDesc').value.trim();
+            const cat = document.getElementById('addCat').value;
+            const img = document.getElementById('addThumb').value.trim();
+            const size = document.getElementById('addSize').value.trim();
+            const price = document.getElementById('addPrice').value;
+            const dlUrl = document.getElementById('addDL').value.trim();
+            const tutorUrl = document.getElementById('addTutor').value.trim();
+            const soft = document.getElementById('addSoft').value.trim();
+            const format = document.getElementById('addFormat').value.trim();
+
+            if(!title || !img || !dlUrl) return alert("সব তথ্য দিন!");
+
+            const newProject = {
+                title: title, description: desc, category: cat, img: img, size: size,
+                price: parseInt(price) || 0, downloadUrl: dlUrl, tutorialUrl: tutorUrl,
+                software: soft, fileFormat: format, secretCode: Math.floor(1000 + Math.random() * 9000)
+            };
+
+            db.ref('projects').push(newProject).then(() => {
+                alert("অ্যাড হয়েছে!");
+                closeModal('addResourceModal');
+            });
         }
 </script>
   </body>
