@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morad Hasan - Ultimate Pro Store</title>
+
+    <!-- Font Awesome 6 Solid Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+        :root {
+            --bg-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --border-color: #e9ecef;
+            --text-color: #1a1d23;
+            --text-muted: #6c757d;
+            --accent-color: #00d4ff;
+            --premium-color: #ffc107;
+            --overlay: rgba(0, 0, 0, 0.85);
+            --telegram-color: #24A1DE;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0b0e14;
+            --surface-color: #161b22;
+            --border-color: #30363d;
+            --text-color: #c9d1d9;
+            --text-muted: #8b949e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; transition: background 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; padding-bottom: 90px; }
+
+        /* --- Professional Loader --- */
+        #loading-spinner-container { position: fixed; inset: 0; background: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        #loading-spinner-container.hidden { opacity: 0; visibility: hidden; transition: 0.5s; }
+        .spinner { width: 45px; height: 45px; border: 4px solid var(--border-color); border-top-color: var(--accent-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- Navigation Drawer --- */
+        .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1500; display: none; }
+        .drawer-overlay.active { display: block; }
+        .nav-drawer { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--surface-color); z-index: 1600; transition: 0.4s; padding: 25px; border-right: 1px solid var(--border-color); }
+        .nav-drawer.active { left: 0; }
+        .drawer-item { display: flex; align-items: center; gap: 15px; padding: 15px; border-radius: 12px; color: var(--text-color); text-decoration: none; font-weight: 600; margin-bottom: 10px; cursor: pointer; }
+        .drawer-item:hover { background: rgba(0, 212, 255, 0.1); }
+
+        /* --- Header & Hero --- */
+        .header { position: sticky; top: 0; z-index: 1000; background: var(--surface-color); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header .logo { font-size: 1.25rem; font-weight: 700; color: var(--accent-color); }
+        .header-icons { display: flex; gap: 18px; }
+        .header-icons i { font-size: 1.2rem; cursor: pointer; }
+
+        .hero { padding: 30px 20px 10px; text-align: center; }
+        .hero h1 { font-size: 1.7rem; font-weight: 800; margin-bottom: 8px; }
+        .hero h1 span { color: #ff4757; }
+        .hero p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+
+        /* --- Search & Categories --- */
+        .search-area { padding: 20px; }
+        .search-box { background: var(--surface-color); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: 12px; display: flex; align-items: center; gap: 12px; }
+        .search-box input { background: none; border: none; color: var(--text-color); width: 100%; outline: none; font-size: 1rem; }
+
+        .categories { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 20px; scrollbar-width: none; }
+        .categories::-webkit-scrollbar { display: none; }
+        .cat-btn { background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-color); padding: 9px 18px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .cat-btn.active { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-color); color: var(--accent-color); }
+
+        /* --- Masonry Layout --- */
+        .masonry-wrapper { padding: 0 15px; column-count: 2; column-gap: 15px; }
+        .card { break-inside: avoid; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; display: block; text-decoration: none; color: inherit; overflow: hidden; cursor: pointer; position: relative; }
+        .card-img-container img { width: 100%; height: auto; display: block; }
+        .premium-badge { position: absolute; top: 10px; left: 10px; background: var(--premium-color); color: #000; padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 800; display: flex; align-items: center; gap: 4px; }
+        .card-body { padding: 12px; }
+        .card-title { font-size: 0.85rem; font-weight: 600; line-height: 1.4; margin-bottom: 12px; }
+        .card-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; }
+        .card-price { font-weight: 700; color: var(--premium-color); font-size: 0.9rem; }
+        .card-size { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+        /* --- Details View --- */
+        #details-view { position: fixed; inset: 0; background: var(--bg-color); z-index: 2000; display: none; overflow-y: auto; padding-bottom: 40px; }
+        .back-nav { padding: 15px 20px; display: flex; align-items: center; gap: 15px; background: var(--surface-color); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; }
+        .detail-img { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--border-color); }
+        .detail-content { padding: 20px; }
+        .info-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; margin-bottom: 20px; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        .info-row:last-child { border: none; }
+        .main-download-btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; color: #000; }
+
+        /* --- Captcha Section --- */
+        #captcha-section { margin-top: 20px; padding: 15px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; text-align: center; }
+        .final-link { display: none; margin-top: 15px; padding: 15px; background: #00ff66; color: #000; border-radius: 12px; text-decoration: none; font-weight: 800; border: none; width: 100%; justify-content: center; align-items: center; cursor: pointer; }
+
+        /* --- Modals --- */
+        .modal { position: fixed; inset: 0; background: var(--overlay); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
+        .modal-box { background: var(--surface-color); border: 1px solid var(--border-color); width: 100%; max-width: 400px; border-radius: 20px; padding: 0; overflow: hidden; position: relative; }
+        .modal-padding { padding: 25px; }
+        .form-input { width: 100%; padding: 14px; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 10px; outline: none; margin: 10px 0; }
+
+        /* --- About Section Specific --- */
+        .about-banner { width: 100%; height: auto; display: block; }
+        .dev-name { font-size: 1.3rem; font-weight: 800; text-align: center; margin: 15px 0 10px; color: var(--accent-color); }
+        .dev-bio { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); text-align: center; padding: 0 20px; }
+        .tg-btn { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--telegram-color); color: #fff; text-decoration: none; padding: 15px; border-radius: 12px; font-weight: 700; margin-top: 20px; width: 100%; border: none; cursor: pointer; }
+
+        /* --- Bottom Navigation --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface-color); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
+        .nav-item { background: none; border: none; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; flex: 1; text-decoration: none; }
+        .nav-item i { font-size: 1.4rem; }
+        .nav-item.active { color: var(--accent-color); }
+
+        .hidden { display: none !important; }
+</style>
+  </head>
+  <body data-theme="light">
+
+    <!-- Loader -->
+    <div id="loading-spinner-container"><div class="spinner"></div></div>
+
+    <!-- Drawer Overlay -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
+    <div class="nav-drawer" id="navDrawer">
+	  <div style="margin-bottom: 30px;">
+		<h2 style="color: var(--accent-color);">Morad Hasan</h2>
+		<p style="font-size: 0.8rem; color: var(--text-muted);">com.digitalstore.premium</p>
+	  </div>
+	  <div class="drawer-item" onclick="openChat()">
+		<i class="fa-solid fa-comment-dots"></i> Live Support
+	  </div>
+	  <div class="drawer-item" onclick="openAbout()">
+		<i class="fa-solid fa-circle-info"></i> About Creator
+	  </div>
+	  <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+		<p style="font-size: 0.75rem; color: var(--text-muted);">Version 3.5.0 Stable</p>
+	  </div>
+    </div>
+
+    <!-- Home View -->
+    <div id="home-view">
+	  <header class="header">
+		<i class="fa-solid fa-bars-staggered" onclick="toggleDrawer(true)"></i>
+		<div class="logo" id="siteName">Morad Hasan</div>
+		<div class="header-icons">
+		  <i class="fa-solid fa-magnifying-glass" onclick="focusSearch()"></i>
+		  <i class="fa-solid fa-moon" id="theme-icon" onclick="toggleTheme()"></i>
+		</div>
+	  </header>
+
+	  <section class="hero">
+		<h1 id="siteHeroTitle">কেমন আছেন <span>❓</span></h1>
+		<p id="siteHeroDesc">প্রিমিয়াম সব PLP ফাইল এবং সোর্স কোড ডাউনলোড করুন খুব সহজেই।</p>
+	  </section>
+
+	  <div class="search-area">
+		<div class="search-box">
+		  <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+		  <input type="text" id="searchInput" placeholder="ফাইলের নাম লিখে খুঁজুন..." onkeyup="filterItems()">
+		</div>
+	  </div>
+
+	  <div class="categories" id="catList"></div>
+
+	  <div class="masonry-wrapper" id="itemsGrid"></div>
+    </div>
+
+    <!-- Details View -->
+    <div id="details-view">
+	  <div class="back-nav">
+		<i class="fa-solid fa-arrow-left" onclick="showHome()" style="cursor: pointer; font-size: 1.2rem;"></i>
+		<span id="detailHeader" style="font-weight: 700;">File Details</span>
+	  </div>
+	  <img src="" id="dImg" class="detail-img">
+	  <div class="detail-content">
+		<h2 id="dTitle" style="margin-bottom: 15px;">-</h2>
+		<div class="info-card">
+		  <div class="info-row"><span>Category</span><span id="dCat">-</span></div>
+		  <div class="info-row"><span>File Size</span><span id="dSize">-</span></div>
+		  <div class="info-row"><span>Price</span><span id="dPrice" style="color: var(--premium-color); font-weight: 700;">Free</span></div>
+		  <div class="info-row"><span>Format</span><span id="dFormat">-</span></div>
+		</div>
+
+		<button class="main-download-btn" id="dActionBtn"><i class="fa-solid fa-download"></i> Download Project</button>
+
+		<div id="captcha-section" class="hidden">
+		  <div style="display:flex; align-items:center; gap:10px; justify-content:center;">
+			<input type="checkbox" id="captchaCheck" style="width:20px; height:20px;" onclick="startTimer()">
+			<label>I'm not a robot</label>
+		  </div>
+		  <p id="timerText" style="margin-top:10px; font-weight:700; color:var(--accent-color); text-align: center;"></p>
+		  <button id="finalLink" class="final-link" onclick="handleDownload()"><i class="fa-solid fa-rocket"></i> Final Download Link</button>
+		</div>
+	  </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+	  <div class="modal-box modal-padding">
+		<h3 style="color: var(--premium-color); text-align: center; margin-bottom: 15px;">Unlock Premium</h3>
+		<div id="walletList"></div>
+		<input type="text" id="secretCode" class="form-input" style="text-align: center;" placeholder="গোপন কোডটি এখানে দিন...">
+		<div style="display: flex; gap: 10px;">
+		  <button class="main-download-btn" style="background: #333; color: #fff;" onclick="closeModal('paymentModal')">Cancel</button>
+		  <button class="main-download-btn" style="background: var(--premium-color);" onclick="verifyCode()">Verify</button>
+		</div>
+	  </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div class="modal" id="chatModal">
+	  <div class="modal-box modal-padding">
+		<h3 style="margin-bottom: 15px;">💬 Live Admin Chat</h3>
+		<input type="text" id="userName" class="form-input" placeholder="আপনার নাম">
+		<textarea id="userMsg" class="form-input" style="height: 100px;" placeholder="আপনার মেসেজ..."></textarea>
+		<div style="display: flex; gap: 10px;">
+		  <button class="main-download-btn" style="background: #333; color: #fff;" onclick="closeModal('chatModal')">Close</button>
+		  <button class="main-download-btn" style="background: var(--accent-color);" onclick="sendTelegramMsg()">Send Message</button>
+		</div>
+	  </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal" id="aboutModal">
+	  <div class="modal-box">
+		<img src="https://github.com/moradhusain21-source/Banner/raw/refs/heads/main/%20banner%20professional.png" class="about-banner" alt="Banner">
+		<div class="modal-padding">
+		  <div class="dev-name">Developer Md Morad Hasan</div>
+		  <div class="dev-bio">
+			আসসালামু আলাইকুম! আমি একজন প্রফেশনাল গ্রাফিক ডিজাইনার এবং অ্যান্ড্রয়েড অ্যাপ্লিকেশন ডেভেলপার। আমি দীর্ঘ দিন ধরে PixelLab PLP ফাইল এবং বিভিন্ন প্রিমিয়াম সোর্স কোড নিয়ে কাজ করছি। আমার তৈরি করা প্রজেক্টগুলো আপনার ডিজাইন ক্যারিয়ারকে আরও সহজ এবং উন্নত করতে সাহায্য করবে ইনশাআল্লাহ। ধন্যবাদ আমার পাশে থাকার জন্য।
+		  </div>
+		  <!-- Telegram Link Fixed -->
+		  <button class="tg-btn" onclick="window.open('https://t.me/moradhasan100', '_blank')">
+			<i class="fa-brands fa-telegram" style="font-size: 1.4rem;"></i> Telegram এ যোগাযোগ করুন
+		  </button>
+		  <button class="main-download-btn" style="background: #333; color: #fff; margin-top: 15px;" onclick="closeModal('aboutModal')">Close</button>
+        </div>
+	  </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+	  <div class="nav-item active" onclick="showHome()">
+		<i class="fa-solid fa-house"></i>
+		<span>Home</span>
+	  </div>
+	  <div class="nav-item" onclick="focusSearch()">
+		<i class="fa-solid fa-magnifying-glass"></i>
+		<span>Search</span>
+	  </div>
+	  <div class="nav-item" onclick="toggleDrawer(true)">
+		<i class="fa-solid fa-bars"></i>
+		<span>Menu</span>
+	  </div>
+	  <div class="nav-item" onclick="toggleTheme()">
+		<i class="fa-solid fa-circle-half-stroke"></i>
+		<span>Mode</span>
+	  </div>
+    </nav>
+
+<script>
+        // Firebase Configuration
+        const firebaseConfig = { databaseURL: "https://live-chat-68028-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const BOT_TOKEN = '7536112249:AAFWJPvn6XkqZpzEzeB1EMa7GNskuM_J-9Q';
+        const CHAT_ID = '7211983994';
+
+        let projects = [];
+        let currentActiveProject = null;
+        let isUnlocked = false;
+
+        window.onload = function() {
+            if(localStorage.getItem('theme') === 'dark') toggleTheme();
+            
+            db.ref('siteSettings').on('value', s => {
+                const v = s.val();
+                if(v) {
+                    document.getElementById('siteName').innerText = v.siteName || "Morad Hasan";
+                    document.getElementById('siteHeroTitle').innerHTML = v.heroTitle || "কেমন আছেন <span>❓</span>";
+                    document.getElementById('siteHeroDesc').innerText = v.siteDesc || "";
+                }
+            });
+
+            db.ref('categories').on('value', s => {
+                const cont = document.getElementById('catList');
+                cont.innerHTML = `<button class="cat-btn active" onclick="filterCategory('all', this)"><i class="fa-solid fa-square-check"></i> All Files</button>`;
+                if(s.val()) {
+                    Object.values(s.val()).forEach(cat => {
+                        cont.innerHTML += `<button class="cat-btn" onclick="filterCategory('${cat}', this)">${cat}</button>`;
+                    });
+                }
+            });
+
+            db.ref('projects').on('value', s => {
+                projects = [];
+                if(s.val()) {
+                    for(let k in s.val()) projects.push({ id: k, ...s.val()[k] });
+                }
+                renderGrid();
+                document.getElementById('loading-spinner-container').classList.add('hidden');
+            });
+
+            db.ref('wallets').on('value', s => {
+                const w = s.val();
+                const list = document.getElementById('walletList');
+                if(list) {
+                    list.innerHTML = "";
+                    if(w) {
+                        for(let key in w) {
+                            list.innerHTML += `
+                                <div class="wallet-item">
+                                    <span style="font-size:0.85rem;"><b>${key.toUpperCase()}:</b> ${w[key]}</span>
+                                    <button onclick="copyText('${w[key]}')" style="background:var(--accent-color); border:none; padding:5px 10px; border-radius:5px; font-weight:700; cursor:pointer; font-size:0.7rem;">Copy</button>
+                                </div>`;
+                        }
+                    }
+                }
+            });
+        };
+
+        function renderGrid() {
+            const grid = document.getElementById('itemsGrid');
+            grid.innerHTML = "";
+            projects.forEach(p => {
+                const isPremium = (p.price > 0 || p.category === "Premium");
+                const card = document.createElement('div');
+                card.className = "card";
+                card.innerHTML = `
+                    <div class="card-img-container">
+                        ${isPremium ? '<div class="premium-badge"><i class="fa-solid fa-crown"></i> PREMIUM</div>' : ''}
+                        <img src="${p.img}">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">${p.title}</div>
+                        <div class="card-meta">
+                            <span class="card-price">৳${p.price || 0}</span>
+                            <span class="card-size">${p.size || '0 KB'}</span>
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => openDetails(p);
+                grid.appendChild(card);
+            });
+        }
+
+        function openDetails(p) {
+            currentActiveProject = p;
+            isUnlocked = false;
+            document.getElementById('details-view').style.display = 'block';
+            document.getElementById('dImg').src = p.img;
+            document.getElementById('dTitle').innerText = p.title;
+            document.getElementById('dCat').innerText = p.category;
+            document.getElementById('dSize').innerText = p.size || "N/A";
+            document.getElementById('dFormat').innerText = p.fileFormat || ".PLP";
+            document.getElementById('dPrice').innerText = p.price > 0 ? "৳" + p.price : "Free";
+            
+            document.getElementById('captcha-section').classList.add('hidden');
+            document.getElementById('captchaCheck').checked = false;
+            document.getElementById('captchaCheck').disabled = false;
+            document.getElementById('timerText').innerText = "";
+            document.getElementById('finalLink').style.display = "none";
+            document.getElementById('dActionBtn').classList.remove('hidden');
+
+            updateDownloadBtn();
+            window.scrollTo(0,0);
+        }
+
+        function updateDownloadBtn() {
+            const btn = document.getElementById('dActionBtn');
+            const isPremium = currentActiveProject.price > 0 || currentActiveProject.category === "Premium";
+            
+            if(isPremium && !isUnlocked) {
+                btn.innerHTML = `<i class="fa-solid fa-crown"></i> Unlock Premium File`;
+                btn.style.background = "var(--premium-color)";
+                btn.onclick = () => document.getElementById('paymentModal').style.display = 'flex';
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-download"></i> Download Now`;
+                btn.style.background = "var(--accent-color)";
+                btn.onclick = () => {
+                    btn.classList.add('hidden');
+                    document.getElementById('captcha-section').classList.remove('hidden');
+                };
+            }
+        }
+
+        function startTimer() {
+            document.getElementById('captchaCheck').disabled = true;
+            let time = 25;
+            const txt = document.getElementById('timerText');
+            const link = document.getElementById('finalLink');
+            const itv = setInterval(() => {
+                time--;
+                txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`;
+                if(time <= 0) {
+                    clearInterval(itv);
+                    txt.innerText = "আপনার লিঙ্ক তৈরি!";
+                    link.style.display = "flex";
+                }
+            }, 1000);
+        }
+
+        // --- Improved Download Handler ---
+        function handleDownload() {
+            if(currentActiveProject && currentActiveProject.downloadUrl) {
+                window.open(currentActiveProject.downloadUrl, '_blank');
+            } else {
+                alert("ডাউনলোড লিঙ্ক খুঁজে পাওয়া যায়নি!");
+            }
+        }
+
+        function verifyCode() {
+            const code = document.getElementById('secretCode').value.trim();
+            db.ref(`projects/${currentActiveProject.id}/secretCode`).once('value', s => {
+                if(s.val() && code.toLowerCase() === s.val().toString().toLowerCase()) {
+                    alert("লিঙ্ক আনলক হয়েছে!");
+                    isUnlocked = true;
+                    closeModal('paymentModal');
+                    updateDownloadBtn();
+                } else {
+                    alert("ভুল কোড! সঠিক কোড দিন।");
+                }
+            });
+        }
+
+        function showHome() { document.getElementById('details-view').style.display = 'none'; }
+        
+        function toggleDrawer(open) {
+            document.getElementById('navDrawer').classList.toggle('active', open);
+            document.getElementById('drawerOverlay').classList.toggle('active', open);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            if(body.getAttribute('data-theme') === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function filterCategory(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const grid = document.getElementById('itemsGrid');
+            grid.innerHTML = "";
+            const filtered = cat === 'all' ? projects : projects.filter(p => p.category === cat);
+            filtered.forEach(p => {
+                const isPremium = (p.price > 0 || p.category === "Premium");
+                const card = document.createElement('div');
+                card.className = "card";
+                card.innerHTML = `<div class="card-img-container">${isPremium ? '<div class="premium-badge"><i class="fa-solid fa-crown"></i> PREMIUM</div>' : ''}<img src="${p.img}"></div><div class="card-body"><div class="card-title">${p.title}</div><div class="card-meta"><span class="card-price">৳${p.price || 0}</span><span class="card-size">${p.size || '0 KB'}</span></div></div>`;
+                card.onclick = () => openDetails(p);
+                grid.appendChild(card);
+            });
+        }
+
+        function filterItems() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            projects.forEach((p, i) => { 
+                if(cards[i]) cards[i].style.display = p.title.toLowerCase().includes(q) ? "block" : "none"; 
+            });
+        }
+
+        function copyText(t) { navigator.clipboard.writeText(t).then(() => alert("কপি হয়েছে: " + t)); }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openChat() { toggleDrawer(false); document.getElementById('chatModal').style.display = 'flex'; }
+        function openAbout() { toggleDrawer(false); document.getElementById('aboutModal').style.display = 'flex'; }
+        function focusSearch() { document.getElementById('searchInput').focus(); }
+
+        function sendTelegramMsg() {
+            const n = document.getElementById('userName').value;
+            const m = document.getElementById('userMsg').value;
+            if(!n || !m) return alert("সব ঘর পূরণ করুন!");
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: `🔔 *New Message*\nUser: ${n}\nMsg: ${m}`, parse_mode: 'Markdown' })
+            }).then(res => { if(res.ok) { alert("মেসেজ পাঠানো হয়েছে!"); closeModal('chatModal'); } });
+        }
+</script>
+  </body>
+</html>
