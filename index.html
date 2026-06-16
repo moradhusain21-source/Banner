@@ -1,3 +1,4 @@
+--- START OF FILE index.html ---
 <!DOCTYPE html>
 <html lang="bn">
   <head>
@@ -22,7 +23,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; padding-bottom: 90px; }
 
-        /* Update Dialog */
         .update-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 5000; padding: 25px; }
         .update-card { background: var(--surface-color); width: 100%; max-width: 320px; border-radius: 25px; padding: 30px; text-align: center; border: 1px solid var(--border-color); }
         .update-icon { font-size: 3.5rem; color: var(--accent-color); margin-bottom: 15px; }
@@ -103,7 +103,16 @@
 </style>
   </head>
   <body data-theme="light">
-    <!-- App Update Overlay -->
+    <div class="modal" id="userWelcomeModal" style="z-index: 6000;">
+        <div class="modal-box" style="padding: 25px; text-align: center;">
+            <i class="fa-solid fa-circle-user" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 15px;"></i>
+            <h3>Welcome!</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Please enter your name to continue.</p>
+            <input type="text" id="regName" class="form-input" style="text-align: center;" placeholder="Your Full Name">
+            <button class="main-download-btn" style="background: var(--accent-color); margin-top: 15px;" onclick="registerUser()">Get Started</button>
+        </div>
+    </div>
+
     <div class="update-overlay" id="updateOverlay">
         <div class="update-card">
             <i class="fa-solid fa-cloud-arrow-down update-icon"></i>
@@ -184,7 +193,6 @@
 	  </div>
     </div>
 
-    <!-- Modals -->
     <div class="modal" id="addResourceModal">
         <div class="modal-box" style="border-radius: 15px;">
             <div class="payment-header" style="background: var(--surface-color); color: var(--text-color); border-bottom: 1px solid var(--border-color); padding: 15px;">
@@ -260,37 +268,43 @@
     const BOT_TOKEN = '7536112249:AAFWJPvn6XkqZpzEzeB1EMa7GNskuM_J-9Q';
     const CHAT_ID = '7211983994';
 
-    // --- Back Button Handler Logic ---
     window.addEventListener('popstate', function (event) {
-        if (document.getElementById('details-view').style.display === 'block') {
-            showHome();
-        } else if (document.getElementById('addResourceModal').style.display === 'flex') {
-            closeModal('addResourceModal');
-        } else if (document.getElementById('paymentModal').style.display === 'flex') {
-            closeModal('paymentModal');
-        } else if (document.getElementById('chatModal').style.display === 'flex') {
-            closeModal('chatModal');
-        } else if (document.getElementById('aboutModal').style.display === 'flex') {
-            closeModal('aboutModal');
-        } else if (document.getElementById('navDrawer').classList.contains('active')) {
-            toggleDrawer(false);
-        }
+        if (document.getElementById('details-view').style.display === 'block') { showHome(); } 
+        else if (document.getElementById('addResourceModal').style.display === 'flex') { closeModal('addResourceModal'); } 
+        else if (document.getElementById('paymentModal').style.display === 'flex') { closeModal('paymentModal'); } 
+        else if (document.getElementById('chatModal').style.display === 'flex') { closeModal('chatModal'); } 
+        else if (document.getElementById('aboutModal').style.display === 'flex') { closeModal('aboutModal'); } 
+        else if (document.getElementById('navDrawer').classList.contains('active')) { toggleDrawer(false); }
     });
+    function pushBackState() { history.pushState({ page: 'internal' }, ''); }
 
-    function pushBackState() {
-        history.pushState({ page: 'internal' }, '');
-    }
-
-    // --- Tracking Logic ---
     let userId = localStorage.getItem('app_user_unique_id');
     if (!userId) {
         userId = 'user_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('app_user_unique_id', userId);
-        db.ref('stats/totalInstalls').transaction(curr => (curr || 0) + 1);
     }
-    const presenceRef = db.ref('activeUsers/' + userId);
-    presenceRef.set(true);
-    presenceRef.onDisconnect().remove();
+
+    function registerUser() {
+        const name = document.getElementById('regName').value.trim();
+        if(!name) return alert("Please enter your name!");
+        const deviceInfo = {
+            name: name, platform: navigator.platform, userAgent: navigator.userAgent,
+            language: navigator.language, screen: `${window.screen.width}x${window.screen.height}`,
+            joined: new Date().toLocaleString()
+        };
+        db.ref('users/' + userId).set(deviceInfo).then(() => {
+            db.ref('stats/totalInstalls').transaction(curr => (curr || 0) + 1);
+            localStorage.setItem('app_user_name', name);
+            closeModal('userWelcomeModal');
+            startPresence();
+        });
+    }
+
+    function startPresence() {
+        const presenceRef = db.ref('activeUsers/' + userId);
+        presenceRef.set(true);
+        presenceRef.onDisconnect().remove();
+    }
 
     let projects = [];
     let currentActiveProject = null;
@@ -298,6 +312,7 @@
 
     window.onload = function() {
         if(localStorage.getItem('theme') === 'dark') toggleTheme();
+        if(!localStorage.getItem('app_user_name')) { openModal('userWelcomeModal'); } else { startPresence(); }
         
         db.ref('appUpdate').on('value', s => {
             const up = s.val();
@@ -466,17 +481,10 @@
     }
 
     function showHome() { document.getElementById('details-view').style.display = 'none'; }
-    function toggleDrawer(open) { 
-        if(open) pushBackState();
-        document.getElementById('navDrawer').classList.toggle('active', open); 
-        document.getElementById('drawerOverlay').classList.toggle('active', open); 
-    }
+    function toggleDrawer(open) { if(open) pushBackState(); document.getElementById('navDrawer').classList.toggle('active', open); document.getElementById('drawerOverlay').classList.toggle('active', open); }
     function openChat() { toggleDrawer(false); openModal('chatModal'); }
     function openAbout() { toggleDrawer(false); openModal('aboutModal'); }
-    function openModal(id) { 
-        pushBackState();
-        document.getElementById(id).style.display = 'flex'; 
-    }
+    function openModal(id) { pushBackState(); document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function closeUpdateDialog() { document.getElementById('updateOverlay').style.display = 'none'; }
 
