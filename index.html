@@ -359,7 +359,13 @@
 
         db.ref('projects').on('value', s => {
             projects = [];
-            if(s.val()) for(let k in s.val()) projects.push({ id: k, ...s.val()[k] });
+            if(s.val()) {
+                for(let k in s.val()) {
+                    projects.push({ id: k, ...s.val()[k] });
+                }
+                // নতুন পোস্ট উপরে দেখানোর জন্য লিস্টটি উল্টে (reverse) দেওয়া হয়েছে
+                projects.reverse();
+            }
             renderGrid();
             document.getElementById('loading-spinner-container').classList.add('hidden');
         });
