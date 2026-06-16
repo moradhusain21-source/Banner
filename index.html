@@ -1,3 +1,4 @@
+--- START OF FILE index.html ---
 <!DOCTYPE html>
 <html lang="bn">
   <head>
@@ -21,6 +22,17 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; padding-bottom: 90px; }
+
+        /* Welcome Video Dialog Styles */
+        .welcome-dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 7000; padding: 20px; }
+        .welcome-dialog-card { background: var(--surface-color); width: 100%; border-radius: 25px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid var(--border-color); animation: modalIn 0.4s ease; }
+        @keyframes modalIn { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
+        .wd-video-container { width: 100%; background: #000; line-height: 0; display: flex; justify-content: center; align-items: center; }
+        .wd-video-container video { width: 100%; height: auto; max-height: 70vh; }
+        .wd-content { padding: 20px; text-align: center; }
+        .wd-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--accent-color); }
+        .wd-msg { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+        .wd-close-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent-color); color: #000; font-weight: 800; font-size: 1rem; cursor: pointer; }
 
         .update-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 5000; padding: 25px; }
         .update-card { background: var(--surface-color); width: 100%; max-width: 320px; border-radius: 25px; padding: 30px; text-align: center; border: 1px solid var(--border-color); }
@@ -51,12 +63,10 @@
         .header { position: sticky; top: 0; z-index: 1000; background: var(--surface-color); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .header .logo { font-size: 1.25rem; font-weight: 700; color: var(--accent-color); }
         
-        /* Badges */
         .notif-badge { background: #ef4444; color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 50px; font-weight: 800; display: none; }
         .menu-btn-container { position: relative; cursor: pointer; }
         .menu-badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; font-size: 10px; padding: 1px 5px; border-radius: 50px; display: none; border: 2px solid var(--surface-color); }
 
-        /* Notification Premium List (Messenger Style) */
         .notif-messenger-item { display: flex; align-items: center; gap: 15px; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
         .notif-messenger-item:active { background: rgba(0, 212, 255, 0.05); }
         .notif-avatar { width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 212, 255, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--accent-color); flex-shrink: 0; }
@@ -119,6 +129,20 @@
 </style>
   </head>
   <body data-theme="light">
+    <!-- Welcome Video Dialog HTML -->
+    <div class="welcome-dialog-overlay" id="welcomeDialog">
+        <div class="welcome-dialog-card" id="wdCard">
+            <div class="wd-video-container">
+                <video id="wdVideo" loop playsinline></video>
+            </div>
+            <div class="wd-content">
+                <h2 class="wd-title" id="wdTitleTxt">Welcome</h2>
+                <p class="wd-msg" id="wdMsgTxt">Welcome to our store.</p>
+                <button class="wd-close-btn" id="wdCloseBtn" onclick="closeWelcomeDialog()">Continue</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="userWelcomeModal" style="z-index: 6000;">
         <div class="modal-box" style="padding: 25px; text-align: center;">
             <i class="fa-solid fa-circle-user" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 15px;"></i>
@@ -213,7 +237,6 @@
 	  </div>
     </div>
 
-    <!-- Notification List Modal -->
     <div class="modal" id="notifListModal">
         <div class="modal-box" style="border-radius: 20px;">
             <div style="padding: 18px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
@@ -226,7 +249,6 @@
         </div>
     </div>
 
-    <!-- Notification Details Modal -->
     <div class="modal" id="notifDetailModal">
         <div class="modal-box" style="padding: 25px; border-radius: 25px;">
             <h3 id="ndTitle" style="color: var(--accent-color); margin-bottom: 10px;">-</h3>
@@ -332,24 +354,11 @@
     function registerUser() {
         const name = document.getElementById('regName').value.trim();
         if(!name) return alert("Please enter your name!");
-        const deviceInfo = {
-            name: name, platform: navigator.platform, userAgent: navigator.userAgent,
-            language: navigator.language, screen: `${window.screen.width}x${window.screen.height}`,
-            joined: new Date().toLocaleString()
-        };
-        db.ref('users/' + userId).set(deviceInfo).then(() => {
-            db.ref('stats/totalInstalls').transaction(curr => (curr || 0) + 1);
-            localStorage.setItem('app_user_name', name);
-            closeModal('userWelcomeModal');
-            startPresence();
-        });
+        const deviceInfo = { name: name, platform: navigator.platform, userAgent: navigator.userAgent, language: navigator.language, screen: `${window.screen.width}x${window.screen.height}`, joined: new Date().toLocaleString() };
+        db.ref('users/' + userId).set(deviceInfo).then(() => { db.ref('stats/totalInstalls').transaction(curr => (curr || 0) + 1); localStorage.setItem('app_user_name', name); closeModal('userWelcomeModal'); startPresence(); });
     }
 
-    function startPresence() {
-        const presenceRef = db.ref('activeUsers/' + userId);
-        presenceRef.set(true);
-        presenceRef.onDisconnect().remove();
-    }
+    function startPresence() { const presenceRef = db.ref('activeUsers/' + userId); presenceRef.set(true); presenceRef.onDisconnect().remove(); }
 
     let projects = [];
     let notifications = [];
@@ -360,245 +369,122 @@
         if(localStorage.getItem('theme') === 'dark') toggleTheme();
         if(!localStorage.getItem('app_user_name')) { openModal('userWelcomeModal'); } else { startPresence(); }
         
+        // --- Global Sound Unlocker Logic ---
+        // This ensures sound works in Apps/WebViews after the first user touch
+        const unlockAudio = () => {
+            const video = document.getElementById('wdVideo');
+            if (video) {
+                video.muted = false;
+                video.play().catch(() => {});
+            }
+            document.removeEventListener('touchstart', unlockAudio);
+            document.removeEventListener('click', unlockAudio);
+        };
+        document.addEventListener('touchstart', unlockAudio);
+        document.addEventListener('click', unlockAudio);
+
+        // Welcome Video Dialog Listener
+        db.ref('welcomeDialog').on('value', s => {
+            const v = s.val();
+            const overlay = document.getElementById('welcomeDialog');
+            if(v && v.enabled) {
+                document.getElementById('wdTitleTxt').innerText = v.title || "";
+                document.getElementById('wdMsgTxt').innerText = v.message || "";
+                document.getElementById('wdCard').style.maxWidth = (v.maxWidth || 320) + "px";
+                document.getElementById('wdCloseBtn').style.display = v.showCancel ? 'block' : 'none';
+                
+                const video = document.getElementById('wdVideo');
+                if(v.videoUrl) {
+                    video.src = v.videoUrl;
+                    video.muted = true; // Start muted for autoplay success
+                    video.play().then(() => {
+                        // After successful autoplay, try to unmute 
+                        // It will succeed if user has already touched the screen
+                        video.muted = false;
+                    }).catch(e => {
+                        // If blocked, keep playing muted until user interaction
+                        video.muted = true;
+                        video.play();
+                    });
+                }
+                overlay.style.display = 'flex';
+            } else {
+                overlay.style.display = 'none';
+                document.getElementById('wdVideo').pause();
+            }
+        });
+
         db.ref('appUpdate').on('value', s => {
             const up = s.val();
             if(up && up.showDialog) {
                 document.getElementById('upTitle').innerText = up.title || "Update Available!";
                 document.getElementById('upDesc').innerText = up.description || "";
-                const btn = document.getElementById('upBtn');
-                btn.innerText = up.buttonText || "Update Now";
-                btn.href = up.buttonLink || "#";
-                btn.style.display = up.showButton ? 'block' : 'none';
-                const closeBtn = document.getElementById('closeUpBtn');
-                if(up.forceUpdate) closeBtn.style.display = 'none';
-                else closeBtn.style.display = 'inline-block';
+                const btn = document.getElementById('upBtn'); btn.innerText = up.buttonText || "Update Now"; btn.href = up.buttonLink || "#"; btn.style.display = up.showButton ? 'block' : 'none';
+                const closeBtn = document.getElementById('closeUpBtn'); if(up.forceUpdate) closeBtn.style.display = 'none'; else closeBtn.style.display = 'inline-block';
                 document.getElementById('updateOverlay').style.display = 'flex';
-            } else {
-                document.getElementById('updateOverlay').style.display = 'none';
-            }
+            } else { document.getElementById('updateOverlay').style.display = 'none'; }
         });
 
-        // Notifications Listener
         db.ref('notifications').on('value', s => {
             notifications = [];
-            if(s.val()) {
-                for(let k in s.val()) { notifications.push({ id: k, ...s.val()[k] }); }
-                notifications.reverse();
-            }
+            if(s.val()) { for(let k in s.val()) { notifications.push({ id: k, ...s.val()[k] }); } notifications.reverse(); }
             updateNotifUI();
         });
 
         db.ref('siteSettings').on('value', s => {
             const v = s.val();
             if(v) {
-                document.getElementById('siteName').innerText = v.siteName || "Morad Hasan";
-                document.getElementById('siteNameHeader').innerText = v.siteName || "Morad Hasan";
-                document.getElementById('siteHeroTitle').innerHTML = v.heroTitle || "কেমন আছেন <span>❓</span>";
-                document.getElementById('siteHeroDesc').innerText = v.siteDesc || "";
-                const fab = document.getElementById('add-fab-btn');
-                if(v.showAddButton === true) fab.classList.remove('hidden'); else fab.classList.add('hidden');
+                document.getElementById('siteName').innerText = v.siteName || "Morad Hasan"; document.getElementById('siteNameHeader').innerText = v.siteName || "Morad Hasan"; document.getElementById('siteHeroTitle').innerHTML = v.heroTitle || "কেমন আছেন <span>❓</span>"; document.getElementById('siteHeroDesc').innerText = v.siteDesc || "";
+                const fab = document.getElementById('add-fab-btn'); if(v.showAddButton === true) fab.classList.remove('hidden'); else fab.classList.add('hidden');
             }
         });
 
         db.ref('categories').on('value', s => {
-            const cont = document.getElementById('catList');
-            cont.innerHTML = `<button class="cat-btn active" onclick="filterCategory('all', this)">All Files</button>`;
+            const cont = document.getElementById('catList'); cont.innerHTML = `<button class="cat-btn active" onclick="filterCategory('all', this)">All Files</button>`;
             if(s.val()) {
                 const cats = Array.isArray(s.val()) ? s.val() : Object.values(s.val());
                 cats.forEach(cat => { cont.innerHTML += `<button class="cat-btn" onclick="filterCategory('${cat}', this)">${cat}</button>`; });
-                const sel = document.getElementById('addCat');
-                if(sel) {
-                    sel.innerHTML = "";
-                    cats.forEach(cat => { sel.innerHTML += `<option value="${cat}">${cat}</option>`; });
-                }
+                const sel = document.getElementById('addCat'); if(sel) { sel.innerHTML = ""; cats.forEach(cat => { sel.innerHTML += `<option value="${cat}">${cat}</option>`; }); }
             }
         });
 
         db.ref('projects').on('value', s => {
-            projects = [];
-            if(s.val()) {
-                for(let k in s.val()) {
-                    projects.push({ id: k, ...s.val()[k] });
-                }
-                projects.reverse();
-            }
-            renderGrid();
-            document.getElementById('loading-spinner-container').classList.add('hidden');
+            projects = []; if(s.val()) { for(let k in s.val()) { projects.push({ id: k, ...s.val()[k] }); } projects.reverse(); }
+            renderGrid(); document.getElementById('loading-spinner-container').classList.add('hidden');
         });
 
         db.ref('wallets').on('value', s => {
             const w = s.val(); const list = document.getElementById('walletList'); list.innerHTML = "";
-            if(w) {
-                const brands = { bkash: 'bKash', nagad: 'Nagad', rocket: 'Rocket', binance: 'Binance' };
-                for(let key in w) {
-                    if(!w[key]) continue;
-                    list.innerHTML += `<div class="wallet-item-card"><div class="wallet-brand"><div class="brand-icon" style="background: var(--${key}-color, #333)">${brands[key][0]}</div><div class="wallet-details"><b>${brands[key]}</b><br><small>${w[key]}</small></div></div><button class="copy-btn" onclick="navigator.clipboard.writeText('${w[key]}').then(()=>alert('Copied!'))">Copy</button></div>`;
-                }
-            }
+            if(w) { const brands = { bkash: 'bKash', nagad: 'Nagad', rocket: 'Rocket', binance: 'Binance' }; for(let key in w) { if(!w[key]) continue; list.innerHTML += `<div class="wallet-item-card"><div class="wallet-brand"><div class="brand-icon" style="background: var(--${key}-color, #333)">${brands[key][0]}</div><div class="wallet-details"><b>${brands[key]}</b><br><small>${w[key]}</small></div></div><button class="copy-btn" onclick="navigator.clipboard.writeText('${w[key]}').then(()=>alert('Copied!'))">Copy</button></div>`; } }
         });
     };
 
+    function closeWelcomeDialog() {
+        document.getElementById('welcomeDialog').style.display = 'none';
+        document.getElementById('wdVideo').pause();
+    }
+
     function updateNotifUI() {
-        const lastCount = parseInt(localStorage.getItem('last_notif_count') || 0);
-        const unread = notifications.length - lastCount;
-        
-        const mainBadge = document.getElementById('main-menu-badge');
-        const drawBadge = document.getElementById('drawer-notif-badge');
-        
-        if(unread > 0) {
-            mainBadge.innerText = unread > 9 ? "9+" : unread;
-            mainBadge.style.display = "block";
-            drawBadge.innerText = unread;
-            drawBadge.style.display = "block";
-        } else {
-            mainBadge.style.display = "none";
-            drawBadge.style.display = "none";
-        }
+        const lastCount = parseInt(localStorage.getItem('last_notif_count') || 0); const unread = notifications.length - lastCount;
+        const mainBadge = document.getElementById('main-menu-badge'); const drawBadge = document.getElementById('drawer-notif-badge');
+        if(unread > 0) { mainBadge.innerText = unread > 9 ? "9+" : unread; mainBadge.style.display = "block"; drawBadge.innerText = unread; drawBadge.style.display = "block"; } else { mainBadge.style.display = "none"; drawBadge.style.display = "none"; }
     }
-
     function openNotifList() {
-        toggleDrawer(false);
-        openModal('notifListModal');
-        localStorage.setItem('last_notif_count', notifications.length);
-        updateNotifUI();
-        
-        const cont = document.getElementById('notifContainer');
-        if(notifications.length === 0) {
-            cont.innerHTML = `<div style="padding: 50px 20px; text-align: center; color: var(--text-muted);"><i class="fa-regular fa-envelope-open" style="font-size: 2.5rem; display: block; margin-bottom: 10px; opacity: 0.3;"></i>No messages here</div>`;
-            return;
-        }
-        cont.innerHTML = "";
-        notifications.forEach(n => {
-            const date = new Date(n.time).toLocaleDateString();
-            cont.innerHTML += `
-                <div class="notif-messenger-item" onclick="openNotifDetails('${n.id}')">
-                    <div class="notif-avatar"><i class="fa-solid fa-bell"></i></div>
-                    <div class="notif-body">
-                        <span class="notif-title-row">${n.title}</span>
-                        <span class="notif-msg-row">${n.message}</span>
-                        <span class="notif-time-row">${date}</span>
-                    </div>
-                </div>
-            `;
-        });
+        toggleDrawer(false); openModal('notifListModal'); localStorage.setItem('last_notif_count', notifications.length); updateNotifUI();
+        const cont = document.getElementById('notifContainer'); if(notifications.length === 0) { cont.innerHTML = `<div style="padding: 50px 20px; text-align: center; color: var(--text-muted);"><i class="fa-regular fa-envelope-open" style="font-size: 2.5rem; display: block; margin-bottom: 10px; opacity: 0.3;"></i>No messages here</div>`; return; }
+        cont.innerHTML = ""; notifications.forEach(n => { const date = new Date(n.time).toLocaleDateString(); cont.innerHTML += `<div class="notif-messenger-item" onclick="openNotifDetails('${n.id}')"><div class="notif-avatar"><i class="fa-solid fa-bell"></i></div><div class="notif-body"><span class="notif-title-row">${n.title}</span><span class="notif-msg-row">${n.message}</span><span class="notif-time-row">${date}</span></div></div>`; });
     }
-
-    function openNotifDetails(id) {
-        const n = notifications.find(x => x.id === id);
-        if(!n) return;
-        document.getElementById('ndTitle').innerText = n.title;
-        document.getElementById('ndMsg').innerText = n.message;
-        const btnArea = document.getElementById('ndLinkBtnArea');
-        btnArea.innerHTML = "";
-        if(n.link) {
-            btnArea.innerHTML = `<button class="main-download-btn" style="background: var(--accent-color);" onclick="window.open('${n.link}', '_blank')">🚀 View Link / Action</button>`;
-        }
-        openModal('notifDetailModal');
-    }
-
-    function renderGrid() {
-        const grid = document.getElementById('itemsGrid'); grid.innerHTML = "";
-        projects.forEach(p => {
-            const isPremium = (p.price > 0 || p.category === "Premium");
-            const card = document.createElement('div'); card.className = "card";
-            card.innerHTML = `<div>${isPremium ? '<div class="premium-badge"><i class="fa-solid fa-crown"></i> PREMIUM</div>' : ''}<img src="${p.img}"></div><div class="card-body"><div class="card-title">${p.title}</div><div class="card-meta"><span class="card-price">৳${p.price || 0}</span><span style="font-size:0.7rem;">${p.size || ''}</span></div></div>`;
-            card.onclick = () => openDetails(p);
-            grid.appendChild(card);
-        });
-    }
-
-    function openDetails(p) {
-        pushBackState();
-        currentActiveProject = p; isUnlocked = false;
-        document.getElementById('details-view').style.display = 'block';
-        document.getElementById('dImg').src = p.img;
-        document.getElementById('dTitle').innerText = p.title;
-        document.getElementById('dCat').innerText = p.category;
-        document.getElementById('dSize').innerText = p.size || "N/A";
-        document.getElementById('dFormat').innerText = p.fileFormat || p.format || ".PLP";
-        document.getElementById('dPrice').innerText = p.price > 0 ? "৳" + p.price : "Free";
-        document.getElementById('captchaCheck').checked = false;
-        document.getElementById('captchaCheck').disabled = false;
-        document.getElementById('timerText').innerText = "";
-        document.getElementById('finalLink').style.display = "none";
-        document.getElementById('captcha-section').classList.add('hidden');
-        document.getElementById('dActionBtn').classList.remove('hidden');
-        const tBtn = document.getElementById('dTutorBtn');
-        if(p.tutorialUrl) { tBtn.classList.remove('hidden'); tBtn.onclick = () => window.open(p.tutorialUrl, '_blank'); }
-        else { tBtn.classList.add('hidden'); }
-        const dBox = document.getElementById('dDescBox');
-        if(p.description) { document.getElementById('dDescText').innerText = p.description; dBox.classList.remove('hidden'); }
-        else { dBox.classList.add('hidden'); }
-        updateDownloadBtn();
-        window.scrollTo(0,0);
-    }
-
-    function updateDownloadBtn() {
-        const btn = document.getElementById('dActionBtn');
-        const isPremium = currentActiveProject.price > 0 || currentActiveProject.category === "Premium";
-        if(isPremium && !isUnlocked) {
-            btn.innerHTML = `<i class="fa-solid fa-crown"></i> Unlock Premium File`;
-            btn.style.background = "var(--premium-color)";
-            btn.onclick = () => openModal('paymentModal');
-        } else {
-            btn.innerHTML = `<i class="fa-solid fa-download"></i> Download Project Now`;
-            btn.style.background = "var(--accent-color)";
-            btn.onclick = () => { btn.classList.add('hidden'); document.getElementById('captcha-section').classList.remove('hidden'); };
-        }
-    }
-
-    function startTimer() {
-        document.getElementById('captchaCheck').disabled = true;
-        let time = 14;
-        const txt = document.getElementById('timerText');
-        const link = document.getElementById('finalLink');
-        txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`;
-        const itv = setInterval(() => {
-            time--;
-            if(time > 0) { txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; }
-            else { clearInterval(itv); txt.innerText = "আপনার লিঙ্ক তৈরি!"; link.style.display = "block"; }
-        }, 1000);
-    }
-
+    function openNotifDetails(id) { const n = notifications.find(x => x.id === id); if(!n) return; document.getElementById('ndTitle').innerText = n.title; document.getElementById('ndMsg').innerText = n.message; const btnArea = document.getElementById('ndLinkBtnArea'); btnArea.innerHTML = ""; if(n.link) { btnArea.innerHTML = `<button class="main-download-btn" style="background: var(--accent-color);" onclick="window.open('${n.link}', '_blank')">🚀 View Link / Action</button>`; } openModal('notifDetailModal'); }
+    function renderGrid() { const grid = document.getElementById('itemsGrid'); grid.innerHTML = ""; projects.forEach(p => { const isPremium = (p.price > 0 || p.category === "Premium"); const card = document.createElement('div'); card.className = "card"; card.innerHTML = `<div>${isPremium ? '<div class="premium-badge"><i class="fa-solid fa-crown"></i> PREMIUM</div>' : ''}<img src="${p.img}"></div><div class="card-body"><div class="card-title">${p.title}</div><div class="card-meta"><span class="card-price">৳${p.price || 0}</span><span style="font-size:0.7rem;">${p.size || ''}</span></div></div>`; card.onclick = () => openDetails(p); grid.appendChild(card); }); }
+    function openDetails(p) { pushBackState(); currentActiveProject = p; isUnlocked = false; document.getElementById('details-view').style.display = 'block'; document.getElementById('dImg').src = p.img; document.getElementById('dTitle').innerText = p.title; document.getElementById('dCat').innerText = p.category; document.getElementById('dSize').innerText = p.size || "N/A"; document.getElementById('dFormat').innerText = p.fileFormat || p.format || ".PLP"; document.getElementById('dPrice').innerText = p.price > 0 ? "৳" + p.price : "Free"; document.getElementById('captchaCheck').checked = false; document.getElementById('captchaCheck').disabled = false; document.getElementById('timerText').innerText = ""; document.getElementById('finalLink').style.display = "none"; document.getElementById('captcha-section').classList.add('hidden'); document.getElementById('dActionBtn').classList.remove('hidden'); const tBtn = document.getElementById('dTutorBtn'); if(p.tutorialUrl) { tBtn.classList.remove('hidden'); tBtn.onclick = () => window.open(p.tutorialUrl, '_blank'); } else { tBtn.classList.add('hidden'); } const dBox = document.getElementById('dDescBox'); if(p.description) { document.getElementById('dDescText').innerText = p.description; dBox.classList.remove('hidden'); } else { dBox.classList.add('hidden'); } updateDownloadBtn(); window.scrollTo(0,0); }
+    function updateDownloadBtn() { const btn = document.getElementById('dActionBtn'); const isPremium = currentActiveProject.price > 0 || currentActiveProject.category === "Premium"; if(isPremium && !isUnlocked) { btn.innerHTML = `<i class="fa-solid fa-crown"></i> Unlock Premium File`; btn.style.background = "var(--premium-color)"; btn.onclick = () => openModal('paymentModal'); } else { btn.innerHTML = `<i class="fa-solid fa-download"></i> Download Project Now`; btn.style.background = "var(--accent-color)"; btn.onclick = () => { btn.classList.add('hidden'); document.getElementById('captcha-section').classList.remove('hidden'); }; } }
+    function startTimer() { document.getElementById('captchaCheck').disabled = true; let time = 14; const txt = document.getElementById('timerText'); const link = document.getElementById('finalLink'); txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; const itv = setInterval(() => { time--; if(time > 0) { txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; } else { clearInterval(itv); txt.innerText = "আপনার লিঙ্ক তৈরি!"; link.style.display = "block"; } }, 1000); }
     function handleDownload() { window.open(currentActiveProject.downloadUrl, '_blank'); }
-    function verifyCode() {
-        const code = document.getElementById('secretCode').value.trim();
-        if(currentActiveProject.secretCode && code.toLowerCase() === currentActiveProject.secretCode.toString().toLowerCase()) {
-            isUnlocked = true; closeModal('paymentModal'); updateDownloadBtn();
-        } else { alert("ভুল কোড!"); }
-    }
-
-    function sendTelegramMsg() {
-        const n = document.getElementById('userName').value;
-        const m = document.getElementById('userMsg').value;
-        if(!n || !m) return alert("সব তথ্য দিন!");
-        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: `📩 Support Request:\nName: ${n}\nMessage: ${m}` })
-        }).then(res => { if(res.ok) { alert("পাঠানো হয়েছে!"); closeModal('chatModal'); } });
-    }
-
-    function filterCategory(cat, btn) {
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const cards = document.querySelectorAll('.card');
-        projects.forEach((p, i) => { cards[i].style.display = (cat === 'all' || p.category === cat) ? "block" : "none"; });
-    }
-
-    function filterItems() {
-        const q = document.getElementById('searchInput').value.toLowerCase();
-        const cards = document.querySelectorAll('.card');
-        projects.forEach((p, i) => { cards[i].style.display = p.title.toLowerCase().includes(q) ? "block" : "none"; });
-    }
-
-    function toggleTheme() {
-        const b = document.body;
-        if(b.getAttribute('data-theme') === 'dark') b.setAttribute('data-theme', 'light');
-        else b.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', b.getAttribute('data-theme'));
-    }
-
+    function verifyCode() { const code = document.getElementById('secretCode').value.trim(); if(currentActiveProject.secretCode && code.toLowerCase() === currentActiveProject.secretCode.toString().toLowerCase()) { isUnlocked = true; closeModal('paymentModal'); updateDownloadBtn(); } else { alert("ভুল কোড!"); } }
+    function sendTelegramMsg() { const n = document.getElementById('userName').value; const m = document.getElementById('userMsg').value; if(!n || !m) return alert("সব তথ্য দিন!"); fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: `📩 Support Request:\nName: ${n}\nMessage: ${m}` }) }).then(res => { if(res.ok) { alert("পাঠানো হয়েছে!"); closeModal('chatModal'); } }); }
+    function filterCategory(cat, btn) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const cards = document.querySelectorAll('.card'); projects.forEach((p, i) => { cards[i].style.display = (cat === 'all' || p.category === cat) ? "block" : "none"; }); }
+    function filterItems() { const q = document.getElementById('searchInput').value.toLowerCase(); const cards = document.querySelectorAll('.card'); projects.forEach((p, i) => { cards[i].style.display = p.title.toLowerCase().includes(q) ? "block" : "none"; }); }
+    function toggleTheme() { const b = document.body; if(b.getAttribute('data-theme') === 'dark') b.setAttribute('data-theme', 'light'); else b.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', b.getAttribute('data-theme')); }
     function showHome() { document.getElementById('details-view').style.display = 'none'; }
     function toggleDrawer(open) { if(open) pushBackState(); document.getElementById('navDrawer').classList.toggle('active', open); document.getElementById('drawerOverlay').classList.toggle('active', open); }
     function openChat() { toggleDrawer(false); openModal('chatModal'); }
@@ -606,23 +492,7 @@
     function openModal(id) { pushBackState(); document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function closeUpdateDialog() { document.getElementById('updateOverlay').style.display = 'none'; }
-
-    function saveNewResource() {
-        const p = {
-            title: document.getElementById('addTitle').value,
-            description: document.getElementById('addDesc').value,
-            category: document.getElementById('addCat').value,
-            img: document.getElementById('addThumb').value,
-            size: document.getElementById('addSize').value,
-            price: parseInt(document.getElementById('addPrice').value) || 0,
-            downloadUrl: document.getElementById('addDL').value,
-            tutorialUrl: document.getElementById('addTutor').value,
-            software: document.getElementById('addSoft').value,
-            fileFormat: document.getElementById('addFormat').value,
-            secretCode: Math.floor(1000 + Math.random() * 9000)
-        };
-        db.ref('projects').push(p).then(() => { alert("Added!"); closeModal('addResourceModal'); });
-    }
+    function saveNewResource() { const p = { title: document.getElementById('addTitle').value, description: document.getElementById('addDesc').value, category: document.getElementById('addCat').value, img: document.getElementById('addThumb').value, size: document.getElementById('addSize').value, price: parseInt(document.getElementById('addPrice').value) || 0, downloadUrl: document.getElementById('addDL').value, tutorialUrl: document.getElementById('addTutor').value, software: document.getElementById('addSoft').value, fileFormat: document.getElementById('addFormat').value, secretCode: Math.floor(1000 + Math.random() * 9000) }; db.ref('projects').push(p).then(() => { alert("Added!"); closeModal('addResourceModal'); }); }
 </script>
   </body>
 </html>
