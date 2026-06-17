@@ -22,6 +22,21 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; padding-bottom: 90px; }
 
+        /* Assistant Styles */
+        .robot-fab { width: 50px; height: 50px; background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; cursor: pointer; margin: 0 auto 10px; box-shadow: 0 4px 15px rgba(0,212,255,0.3); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+        #assistant-pointer { position: fixed; width: 25px; height: 25px; background: rgba(255, 0, 0, 0.6); border: 2px solid white; border-radius: 50%; z-index: 10000; pointer-events: none; display: none; box-shadow: 0 0 15px red; transform: translate(-50%, -50%); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        .chat-container { display: flex; flex-direction: column; height: 350px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .chat-bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 0.85rem; line-height: 1.4; }
+        .chat-bot { background: var(--border-color); align-self: flex-start; color: var(--text-color); border-bottom-left-radius: 2px; }
+        .chat-user { background: var(--accent-color); align-self: flex-end; color: #000; border-bottom-right-radius: 2px; }
+        .chat-input-area { display: flex; gap: 10px; padding: 10px; border-top: 1px solid var(--border-color); }
+        .typing-dot { width: 6px; height: 6px; background: var(--text-muted); border-radius: 50%; display: inline-block; animation: typing 1s infinite; margin: 0 2px; }
+        @keyframes typing { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
         /* Welcome Video Dialog Styles */
         .welcome-dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 7000; padding: 20px; }
         .welcome-dialog-card { background: var(--surface-color); width: 100%; border-radius: 25px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid var(--border-color); animation: modalIn 0.4s ease; }
@@ -128,6 +143,10 @@
 </style>
   </head>
   <body data-theme="light">
+
+    <!-- Assistant Pointer -->
+    <div id="assistant-pointer"></div>
+
     <!-- Welcome Video Dialog HTML -->
     <div class="welcome-dialog-overlay" id="welcomeDialog">
         <div class="welcome-dialog-card" id="wdCard">
@@ -171,10 +190,10 @@
 		<p>Premium Content Store</p>
 	  </div>
       <div class="drawer-content">
-          <div class="drawer-item" onclick="showHome(); toggleDrawer(false);"><div class="drawer-item-left"><i class="fa-solid fa-house"></i> Home</div></div>
-          <div class="drawer-item" onclick="openNotifList()"><div class="drawer-item-left"><i class="fa-solid fa-bell"></i> Notifications</div><span class="notif-badge" id="drawer-notif-badge">0</span></div>
-          <div class="drawer-item" onclick="openChat()"><div class="drawer-item-left"><i class="fa-solid fa-headset"></i> Live Support</div></div>
-          <div class="drawer-item" onclick="openAbout()"><div class="drawer-item-left"><i class="fa-solid fa-user-tie"></i> About Creator</div></div>
+          <div class="drawer-item" id="nav-home" onclick="showHome(); toggleDrawer(false);"><div class="drawer-item-left"><i class="fa-solid fa-house"></i> Home</div></div>
+          <div class="drawer-item" id="nav-notif" onclick="openNotifList()"><div class="drawer-item-left"><i class="fa-solid fa-bell"></i> Notifications</div><span class="notif-badge" id="drawer-notif-badge">0</span></div>
+          <div class="drawer-item" id="nav-support" onclick="openChat()"><div class="drawer-item-left"><i class="fa-solid fa-headset"></i> Live Support</div></div>
+          <div class="drawer-item" id="nav-about" onclick="openAbout()"><div class="drawer-item-left"><i class="fa-solid fa-user-tie"></i> About Creator</div></div>
           <div class="drawer-item" onclick="toggleTheme(); toggleDrawer(false);"><div class="drawer-item-left"><i class="fa-solid fa-circle-half-stroke"></i> Switch Mode</div></div>
       </div>
       <div class="drawer-footer">Version 3.5.0 Stable<br>Design by Morad Hasan</div>
@@ -182,7 +201,7 @@
     
     <div id="home-view">
 	  <header class="header">
-        <div class="menu-btn-container" onclick="toggleDrawer(true)">
+        <div class="menu-btn-container" id="main-menu-btn" onclick="toggleDrawer(true)">
             <i class="fa-solid fa-bars-staggered"></i>
             <div class="menu-badge" id="main-menu-badge">0</div>
         </div>
@@ -194,6 +213,8 @@
 		<p id="siteHeroDesc" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 5px;">প্রিমিয়াম সব ফাইল ডাউনলোড করুন খুব সহজেই।</p>
 	  </section>
 	  <div class="search-area">
+        <!-- Assistant Robot Button -->
+        <div class="robot-fab" onclick="openAssistantChat()"><i class="fa-solid fa-robot"></i></div>
 		<div class="search-box">
 		  <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
 		  <input type="text" id="searchInput" placeholder="ফাইলের নাম লিখুন..." onkeyup="filterItems()">
@@ -201,6 +222,25 @@
 	  </div>
 	  <div class="categories" id="catList"></div>
 	  <div class="masonry-wrapper" id="itemsGrid"></div>
+    </div>
+
+    <!-- Assistant Chat Modal -->
+    <div class="modal" id="assistantModal">
+        <div class="modal-box" style="border-radius: 20px;">
+            <div style="padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--accent-color); color: #000;">
+                <h3 style="font-size: 1rem;"><i class="fa-solid fa-robot"></i> Smart Assistant</h3>
+                <i class="fa-solid fa-xmark" onclick="closeModal('assistantModal')" style="cursor: pointer;"></i>
+            </div>
+            <div class="chat-container">
+                <div class="chat-messages" id="assistantChatLog">
+                    <div class="chat-bubble chat-bot">হ্যালো! আমি আপনার স্মার্ট অ্যাসিস্ট্যান্ট। আমি আপনাকে কীভাবে সাহায্য করতে পারি? আপনি বলতে পারেন 'এডমিনকে মেসেজ দাও' অথবা 'কিভাবে ফাইল এড করতে হয়?'</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="assistantInput" class="form-input" placeholder="আপনার প্রশ্ন লিখুন..." style="margin-bottom: 0;">
+                    <button class="main-download-btn" style="width: 50px; padding: 0; background: var(--accent-color);" onclick="handleAssistantMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="details-view">
@@ -274,8 +314,8 @@
                 <div class="form-group"><label>Required Software</label><input type="text" id="addSoft" class="form-input" value="PixelLab"></div>
                 <div class="form-group"><label>Format</label><input type="text" id="addFormat" class="form-input" value=".PLP"></div>
                 <div style="display: flex; gap: 10px; margin-top: 10px; margin-bottom: 20px;">
-                    <button class="main-download-btn" style="background: var(--border-color); flex: 1;" onclick="closeModal('addResourceModal')">Cancel</button>
-                    <button class="main-download-btn" style="background: var(--accent-color); flex: 2;" onclick="saveNewResource()">Add Now</button>
+                    <button class="main-download-btn" id="cancelAddBtn" style="background: var(--border-color); flex: 1;" onclick="closeModal('addResourceModal')">Cancel</button>
+                    <button class="main-download-btn" id="submitAddBtn" style="background: var(--accent-color); flex: 2;" onclick="saveNewResource()">Add Now</button>
                 </div>
             </div>
         </div>
@@ -300,7 +340,7 @@
 		<h3 style="margin-bottom: 15px;">💬 Admin Support</h3>
 		<input type="text" id="userName" style="width:100%; padding:12px; margin-bottom:10px;" placeholder="আপনার নাম">
 		<textarea id="userMsg" style="width:100%; padding:12px; height:100px;" placeholder="আপনার মেসেজ..."></textarea>
-		<button class="main-download-btn" style="background: var(--accent-color); margin-top: 15px;" onclick="sendTelegramMsg()">Send Message</button>
+		<button class="main-download-btn" id="sendSupportBtn" style="background: var(--accent-color); margin-top: 15px;" onclick="sendTelegramMsg()">Send Message</button>
         <button onclick="closeModal('chatModal')" style="width:100%; background:none; border:none; margin-top:10px; color:var(--text-muted);">Cancel</button>
 	  </div>
     </div>
@@ -340,6 +380,7 @@
         else if (document.getElementById('aboutModal').style.display === 'flex') { closeModal('aboutModal'); } 
         else if (document.getElementById('notifListModal').style.display === 'flex') { closeModal('notifListModal'); } 
         else if (document.getElementById('notifDetailModal').style.display === 'flex') { closeModal('notifDetailModal'); } 
+        else if (document.getElementById('assistantModal').style.display === 'flex') { closeModal('assistantModal'); } 
         else if (document.getElementById('navDrawer').classList.contains('active')) { toggleDrawer(false); }
     });
     function pushBackState() { history.pushState({ page: 'internal' }, ''); }
@@ -414,7 +455,6 @@
                 document.getElementById('upDesc').innerText = up.description || "";
                 const btn = document.getElementById('upBtn'); 
                 btn.innerText = up.buttonText || "Update Now"; 
-                // Fix for update button download format
                 btn.onclick = function() { 
                     triggerDirectDownload(up.buttonLink); 
                 };
@@ -479,18 +519,15 @@
     function updateDownloadBtn() { const btn = document.getElementById('dActionBtn'); const isPremium = currentActiveProject.price > 0 || currentActiveProject.category === "Premium"; if(isPremium && !isUnlocked) { btn.innerHTML = `<i class="fa-solid fa-crown"></i> Unlock Premium File`; btn.style.background = "var(--premium-color)"; btn.onclick = () => openModal('paymentModal'); } else { btn.innerHTML = `<i class="fa-solid fa-download"></i> Download Project Now`; btn.style.background = "var(--accent-color)"; btn.onclick = () => { btn.classList.add('hidden'); document.getElementById('captcha-section').classList.remove('hidden'); }; } }
     function startTimer() { document.getElementById('captchaCheck').disabled = true; let time = 14; const txt = document.getElementById('timerText'); const link = document.getElementById('finalLink'); txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; const itv = setInterval(() => { time--; if(time > 0) { txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; } else { clearInterval(itv); txt.innerText = "আপনার লিঙ্ক তৈরি!"; link.style.display = "block"; } }, 1000); }
     
-    // --- Final Fix for Download Format Problem ---
     function handleDownload() { 
         if(currentActiveProject && currentActiveProject.downloadUrl) {
             triggerDirectDownload(currentActiveProject.downloadUrl);
         }
     }
 
-    // This function ensures the file maintains its extension (.apk, .png, etc.)
     function triggerDirectDownload(url) {
         const link = document.createElement('a');
         link.href = url;
-        // Extracting filename from URL to suggest it to the browser
         const fileName = url.substring(url.lastIndexOf('/') + 1).split(/[?#]/)[0];
         link.setAttribute('download', fileName);
         link.setAttribute('target', '_blank');
@@ -498,7 +535,6 @@
         link.click();
         document.body.removeChild(link);
     }
-    // ----------------------------------------------
 
     function verifyCode() { const code = document.getElementById('secretCode').value.trim(); if(currentActiveProject.secretCode && code.toLowerCase() === currentActiveProject.secretCode.toString().toLowerCase()) { isUnlocked = true; closeModal('paymentModal'); updateDownloadBtn(); } else { alert("ভুল কোড!"); } }
     function sendTelegramMsg() { const n = document.getElementById('userName').value; const m = document.getElementById('userMsg').value; if(!n || !m) return alert("সব তথ্য দিন!"); fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: `📩 Support Request:\nName: ${n}\nMessage: ${m}` }) }).then(res => { if(res.ok) { alert("পাঠানো হয়েছে!"); closeModal('chatModal'); } }); }
@@ -513,6 +549,137 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function closeUpdateDialog() { document.getElementById('updateOverlay').style.display = 'none'; }
     function saveNewResource() { const p = { title: document.getElementById('addTitle').value, description: document.getElementById('addDesc').value, category: document.getElementById('addCat').value, img: document.getElementById('addThumb').value, size: document.getElementById('addSize').value, price: parseInt(document.getElementById('addPrice').value) || 0, downloadUrl: document.getElementById('addDL').value, tutorialUrl: document.getElementById('addTutor').value, software: document.getElementById('addSoft').value, fileFormat: document.getElementById('addFormat').value, secretCode: Math.floor(1000 + Math.random() * 9000) }; db.ref('projects').push(p).then(() => { alert("Added!"); closeModal('addResourceModal'); }); }
+
+    // ==========================================
+    // IN-APP ASSISTANT SYSTEM (SMART ROBOT)
+    // ==========================================
+
+    const adminMsgs = [
+        "আসসালামু আলাইকুম, আমার এই অ্যাপ থেকে কিছু ফাইল ডাউনলোড করতে সমস্যা হচ্ছে। দয়া করে সমাধান দিলে উপকৃত হতাম।",
+        "আমি একটি ফাইল কিনবো ভাবছি কিন্তু পেমেন্ট প্রসেসটা ঠিক বুঝতে পারছি না। সাহায্য প্রয়োজন।",
+        "অ্যাপ এর ফিচারগুলো অনেক সুন্দর। আমি নিয়মিত ইউজার। ধন্যবাদ আপনাকে সুন্দর সার্ভিস দেয়ার জন্য।",
+        "প্রিয় এডমিন, আমার ডাউনলোড করা ফাইলে কোড চাচ্ছে কিন্তু আমি কোডটা খুঁজে পাচ্ছি না।",
+        "আমি আপনার তৈরি সব প্রোজেক্ট এর অনেক বড় ফ্যান। আরও নতুন নতুন ফাইল এড করলে ভালো হয়।"
+    ];
+
+    function openAssistantChat() {
+        openModal('assistantModal');
+        document.getElementById('assistantInput').focus();
+    }
+
+    async function handleAssistantMsg() {
+        const input = document.getElementById('assistantInput');
+        const text = input.value.trim().toLowerCase();
+        if(!text) return;
+
+        addChatBubble(input.value, 'user');
+        input.value = "";
+
+        if(text.includes('মেসেজ') || text.includes('admin') || text.includes('এডমিন')) {
+            addChatBubble('ঠিক আছে, আমি এডমিনকে একটি মেসেজ পাঠিয়ে দিচ্ছি। একটু অপেক্ষা করুন...', 'bot');
+            setTimeout(() => {
+                closeModal('assistantModal');
+                taskSendAdminMessage();
+            }, 1500);
+        } else if(text.includes('ফাইল এড') || text.includes('কিভাবে') || text.includes('add file')) {
+            addChatBubble('অবশ্যই! আমি আপনাকে দেখাচ্ছি কীভাবে একটি ফাইল অ্যাড করতে হয়। প্রসেসটি খেয়াল করুন...', 'bot');
+            setTimeout(() => {
+                closeModal('assistantModal');
+                taskAddFileDemo();
+            }, 1500);
+        } else {
+            addChatBubble('দুঃখিত, আমি আপনার কথা বুঝতে পারিনি। দয়া করে বলুন "এডমিনকে মেসেজ দাও" অথবা "কিভাবে ফাইল এড করতে হয়?"', 'bot');
+        }
+    }
+
+    function addChatBubble(msg, sender) {
+        const log = document.getElementById('assistantChatLog');
+        const b = document.createElement('div');
+        b.className = `chat-bubble chat-${sender}`;
+        b.innerText = msg;
+        log.appendChild(b);
+        log.scrollTop = log.scrollHeight;
+    }
+
+    async function taskSendAdminMessage() {
+        const name = localStorage.getItem('app_user_name') || "User";
+        const msg = adminMsgs[Math.floor(Math.random() * adminMsgs.length)];
+
+        await moveAndClick('main-menu-btn');
+        await sleep(800);
+        await moveAndClick('nav-support');
+        await sleep(800);
+        
+        const nameInput = document.getElementById('userName');
+        const msgInput = document.getElementById('userMsg');
+        
+        await smoothType(nameInput, name);
+        await sleep(500);
+        await smoothType(msgInput, msg);
+        await sleep(500);
+        await moveAndClick('sendSupportBtn');
+        
+        hidePointer();
+    }
+
+    async function taskAddFileDemo() {
+        const fab = document.getElementById('add-fab-btn');
+        if(fab.classList.contains('hidden')) {
+            alert("সরি, এই ফিচারে আপনার অনুমতি নেই।");
+            return;
+        }
+
+        const imgLink = "https://files.catbox.moe/gw83yw.png";
+        
+        await moveAndClick('add-fab-btn');
+        await sleep(1000);
+
+        await smoothType(document.getElementById('addTitle'), "Smart Assistant Demo Project");
+        await smoothType(document.getElementById('addDesc'), "This is an automated demo project added by the smart assistant robot.");
+        await smoothType(document.getElementById('addThumb'), imgLink);
+        await smoothType(document.getElementById('addSize'), "12.5 MB");
+        await smoothType(document.getElementById('addDL'), imgLink);
+        
+        await sleep(800);
+        await moveAndClick('submitAddBtn');
+        hidePointer();
+    }
+
+    // Helper functions for Assistant
+    async function moveAndClick(id) {
+        const el = document.getElementById(id);
+        const rect = el.getBoundingClientRect();
+        const ptr = document.getElementById('assistant-pointer');
+        
+        ptr.style.display = 'block';
+        ptr.style.top = (rect.top + rect.height/2) + 'px';
+        ptr.style.left = (rect.left + rect.width/2) + 'px';
+        
+        await sleep(800);
+        el.click();
+    }
+
+    async function smoothType(el, text) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const rect = el.getBoundingClientRect();
+        const ptr = document.getElementById('assistant-pointer');
+        ptr.style.top = (rect.top + rect.height/2) + 'px';
+        ptr.style.left = (rect.left + rect.width/2) + 'px';
+        
+        el.value = "";
+        for(let char of text) {
+            el.value += char;
+            await sleep(30);
+        }
+        await sleep(300);
+    }
+
+    function hidePointer() {
+        document.getElementById('assistant-pointer').style.display = 'none';
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 </script>
   </body>
 </html>
