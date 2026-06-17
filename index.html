@@ -1,4 +1,3 @@
---- START OF FILE index.html ---
 <!DOCTYPE html>
 <html lang="bn">
   <head>
@@ -158,7 +157,7 @@
             <i class="fa-solid fa-cloud-arrow-down update-icon"></i>
             <h2 class="update-title" id="upTitle">Update Available!</h2>
             <p class="update-desc" id="upDesc">Please update to continue.</p>
-            <a href="#" id="upBtn" class="update-btn">Update Now</a>
+            <a href="javascript:void(0)" id="upBtn" class="update-btn">Update Now</a>
             <span id="closeUpBtn" class="close-update" onclick="closeUpdateDialog()">Later</span>
         </div>
     </div>
@@ -369,8 +368,6 @@
         if(localStorage.getItem('theme') === 'dark') toggleTheme();
         if(!localStorage.getItem('app_user_name')) { openModal('userWelcomeModal'); } else { startPresence(); }
         
-        // --- Global Sound Unlocker Logic ---
-        // This ensures sound works in Apps/WebViews after the first user touch
         const unlockAudio = () => {
             const video = document.getElementById('wdVideo');
             if (video) {
@@ -383,7 +380,6 @@
         document.addEventListener('touchstart', unlockAudio);
         document.addEventListener('click', unlockAudio);
 
-        // Welcome Video Dialog Listener
         db.ref('welcomeDialog').on('value', s => {
             const v = s.val();
             const overlay = document.getElementById('welcomeDialog');
@@ -396,13 +392,10 @@
                 const video = document.getElementById('wdVideo');
                 if(v.videoUrl) {
                     video.src = v.videoUrl;
-                    video.muted = true; // Start muted for autoplay success
+                    video.muted = true;
                     video.play().then(() => {
-                        // After successful autoplay, try to unmute 
-                        // It will succeed if user has already touched the screen
                         video.muted = false;
                     }).catch(e => {
-                        // If blocked, keep playing muted until user interaction
                         video.muted = true;
                         video.play();
                     });
@@ -419,7 +412,13 @@
             if(up && up.showDialog) {
                 document.getElementById('upTitle').innerText = up.title || "Update Available!";
                 document.getElementById('upDesc').innerText = up.description || "";
-                const btn = document.getElementById('upBtn'); btn.innerText = up.buttonText || "Update Now"; btn.href = up.buttonLink || "#"; btn.style.display = up.showButton ? 'block' : 'none';
+                const btn = document.getElementById('upBtn'); 
+                btn.innerText = up.buttonText || "Update Now"; 
+                // Fix for update button download format
+                btn.onclick = function() { 
+                    triggerDirectDownload(up.buttonLink); 
+                };
+                btn.style.display = up.showButton ? 'block' : 'none';
                 const closeBtn = document.getElementById('closeUpBtn'); if(up.forceUpdate) closeBtn.style.display = 'none'; else closeBtn.style.display = 'inline-block';
                 document.getElementById('updateOverlay').style.display = 'flex';
             } else { document.getElementById('updateOverlay').style.display = 'none'; }
@@ -479,7 +478,28 @@
     function openDetails(p) { pushBackState(); currentActiveProject = p; isUnlocked = false; document.getElementById('details-view').style.display = 'block'; document.getElementById('dImg').src = p.img; document.getElementById('dTitle').innerText = p.title; document.getElementById('dCat').innerText = p.category; document.getElementById('dSize').innerText = p.size || "N/A"; document.getElementById('dFormat').innerText = p.fileFormat || p.format || ".PLP"; document.getElementById('dPrice').innerText = p.price > 0 ? "৳" + p.price : "Free"; document.getElementById('captchaCheck').checked = false; document.getElementById('captchaCheck').disabled = false; document.getElementById('timerText').innerText = ""; document.getElementById('finalLink').style.display = "none"; document.getElementById('captcha-section').classList.add('hidden'); document.getElementById('dActionBtn').classList.remove('hidden'); const tBtn = document.getElementById('dTutorBtn'); if(p.tutorialUrl) { tBtn.classList.remove('hidden'); tBtn.onclick = () => window.open(p.tutorialUrl, '_blank'); } else { tBtn.classList.add('hidden'); } const dBox = document.getElementById('dDescBox'); if(p.description) { document.getElementById('dDescText').innerText = p.description; dBox.classList.remove('hidden'); } else { dBox.classList.add('hidden'); } updateDownloadBtn(); window.scrollTo(0,0); }
     function updateDownloadBtn() { const btn = document.getElementById('dActionBtn'); const isPremium = currentActiveProject.price > 0 || currentActiveProject.category === "Premium"; if(isPremium && !isUnlocked) { btn.innerHTML = `<i class="fa-solid fa-crown"></i> Unlock Premium File`; btn.style.background = "var(--premium-color)"; btn.onclick = () => openModal('paymentModal'); } else { btn.innerHTML = `<i class="fa-solid fa-download"></i> Download Project Now`; btn.style.background = "var(--accent-color)"; btn.onclick = () => { btn.classList.add('hidden'); document.getElementById('captcha-section').classList.remove('hidden'); }; } }
     function startTimer() { document.getElementById('captchaCheck').disabled = true; let time = 14; const txt = document.getElementById('timerText'); const link = document.getElementById('finalLink'); txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; const itv = setInterval(() => { time--; if(time > 0) { txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; } else { clearInterval(itv); txt.innerText = "আপনার লিঙ্ক তৈরি!"; link.style.display = "block"; } }, 1000); }
-    function handleDownload() { window.open(currentActiveProject.downloadUrl, '_blank'); }
+    
+    // --- Final Fix for Download Format Problem ---
+    function handleDownload() { 
+        if(currentActiveProject && currentActiveProject.downloadUrl) {
+            triggerDirectDownload(currentActiveProject.downloadUrl);
+        }
+    }
+
+    // This function ensures the file maintains its extension (.apk, .png, etc.)
+    function triggerDirectDownload(url) {
+        const link = document.createElement('a');
+        link.href = url;
+        // Extracting filename from URL to suggest it to the browser
+        const fileName = url.substring(url.lastIndexOf('/') + 1).split(/[?#]/)[0];
+        link.setAttribute('download', fileName);
+        link.setAttribute('target', '_blank');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    // ----------------------------------------------
+
     function verifyCode() { const code = document.getElementById('secretCode').value.trim(); if(currentActiveProject.secretCode && code.toLowerCase() === currentActiveProject.secretCode.toString().toLowerCase()) { isUnlocked = true; closeModal('paymentModal'); updateDownloadBtn(); } else { alert("ভুল কোড!"); } }
     function sendTelegramMsg() { const n = document.getElementById('userName').value; const m = document.getElementById('userMsg').value; if(!n || !m) return alert("সব তথ্য দিন!"); fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: `📩 Support Request:\nName: ${n}\nMessage: ${m}` }) }).then(res => { if(res.ok) { alert("পাঠানো হয়েছে!"); closeModal('chatModal'); } }); }
     function filterCategory(cat, btn) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const cards = document.querySelectorAll('.card'); projects.forEach((p, i) => { cards[i].style.display = (cat === 'all' || p.category === cat) ? "block" : "none"; }); }
