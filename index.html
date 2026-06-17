@@ -1,5 +1,4 @@
 --- START OF FILE index.html ---
-
 <!DOCTYPE html>
 <html lang="bn">
   <head>
@@ -42,11 +41,6 @@
         .update-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; }
         .update-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent-color); color: #000; font-weight: 800; font-size: 1rem; cursor: pointer; display: block; text-decoration: none; }
         .close-update { margin-top: 15px; display: inline-block; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
-
-        /* Progress Bar Styles */
-        .progress-container { width: 100%; background: var(--border-color); height: 10px; border-radius: 10px; margin: 20px 0; overflow: hidden; display: none; }
-        .progress-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-color), #00ff66); transition: width 0.3s; }
-        .progress-text { font-size: 0.85rem; font-weight: 700; color: var(--accent-color); display: none; margin-bottom: 10px; }
 
         #loading-spinner-container { position: fixed; inset: 0; background: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         #loading-spinner-container.hidden { opacity: 0; visibility: hidden; transition: 0.5s; }
@@ -139,7 +133,7 @@
     <div class="welcome-dialog-overlay" id="welcomeDialog">
         <div class="welcome-dialog-card" id="wdCard">
             <div class="wd-video-container">
-                <video id="wdVideo" loop playsinline></video>
+                <video id="wdVideo" autoplay muted loop playsinline controlsList="nodownload" style="width: 100%; height: auto; display: block;"></video>
             </div>
             <div class="wd-content">
                 <h2 class="wd-title" id="wdTitleTxt">Welcome</h2>
@@ -164,14 +158,7 @@
             <i class="fa-solid fa-cloud-arrow-down update-icon"></i>
             <h2 class="update-title" id="upTitle">Update Available!</h2>
             <p class="update-desc" id="upDesc">Please update to continue.</p>
-            
-            <!-- Real-time Download Progress UI -->
-            <div id="upPercent" class="progress-text">0%</div>
-            <div id="upProgressCont" class="progress-container">
-                <div id="upProgressBar" class="progress-fill"></div>
-            </div>
-
-            <button id="upBtn" class="update-btn" onclick="startAppUpdate()">Update Now</button>
+            <a href="#" id="upBtn" class="update-btn">Update Now</a>
             <span id="closeUpBtn" class="close-update" onclick="closeUpdateDialog()">Later</span>
         </div>
     </div>
@@ -346,8 +333,6 @@
     const BOT_TOKEN = '7536112249:AAFWJPvn6XkqZpzEzeB1EMa7GNskuM_J-9Q';
     const CHAT_ID = '7211983994';
 
-    let appUpdateData = null; // To store current update link
-
     window.addEventListener('popstate', function (event) {
         if (document.getElementById('details-view').style.display === 'block') { showHome(); } 
         else if (document.getElementById('addResourceModal').style.display === 'flex') { closeModal('addResourceModal'); } 
@@ -384,15 +369,21 @@
         if(localStorage.getItem('theme') === 'dark') toggleTheme();
         if(!localStorage.getItem('app_user_name')) { openModal('userWelcomeModal'); } else { startPresence(); }
         
+        // --- Global Sound Unlocker Logic ---
+        // This ensures sound works in Apps/WebViews after the first user touch
         const unlockAudio = () => {
             const video = document.getElementById('wdVideo');
-            if (video) { video.muted = false; video.play().catch(() => {}); }
+            if (video) {
+                video.muted = false;
+                video.play().catch(() => {});
+            }
             document.removeEventListener('touchstart', unlockAudio);
             document.removeEventListener('click', unlockAudio);
         };
         document.addEventListener('touchstart', unlockAudio);
         document.addEventListener('click', unlockAudio);
 
+        // Welcome Video Dialog Listener
         db.ref('welcomeDialog').on('value', s => {
             const v = s.val();
             const overlay = document.getElementById('welcomeDialog');
@@ -401,30 +392,36 @@
                 document.getElementById('wdMsgTxt').innerText = v.message || "";
                 document.getElementById('wdCard').style.maxWidth = (v.maxWidth || 320) + "px";
                 document.getElementById('wdCloseBtn').style.display = v.showCancel ? 'block' : 'none';
+                
                 const video = document.getElementById('wdVideo');
-                if(v.videoUrl) { video.src = v.videoUrl; video.muted = true; video.play().then(() => { video.muted = false; }).catch(e => { video.muted = true; video.play(); }); }
+                if(v.videoUrl) {
+                    video.src = v.videoUrl;
+                    video.muted = true; // Start muted for autoplay success
+                    video.play().then(() => {
+                        // After successful autoplay, try to unmute 
+                        // It will succeed if user has already touched the screen
+                        video.muted = false;
+                    }).catch(e => {
+                        // If blocked, keep playing muted until user interaction
+                        video.muted = true;
+                        video.play();
+                    });
+                }
                 overlay.style.display = 'flex';
-            } else { overlay.style.display = 'none'; document.getElementById('wdVideo').pause(); }
+            } else {
+                overlay.style.display = 'none';
+                document.getElementById('wdVideo').pause();
+            }
         });
 
-        // App Update Realtime Listener
         db.ref('appUpdate').on('value', s => {
             const up = s.val();
-            appUpdateData = up;
             if(up && up.showDialog) {
                 document.getElementById('upTitle').innerText = up.title || "Update Available!";
                 document.getElementById('upDesc').innerText = up.description || "";
-                const btn = document.getElementById('upBtn'); 
-                btn.innerText = up.buttonText || "Update Now";
-                btn.style.display = up.showButton ? 'block' : 'none';
-                const closeBtn = document.getElementById('closeUpBtn'); 
-                if(up.forceUpdate) closeBtn.style.display = 'none'; else closeBtn.style.display = 'inline-block';
+                const btn = document.getElementById('upBtn'); btn.innerText = up.buttonText || "Update Now"; btn.href = up.buttonLink || "#"; btn.style.display = up.showButton ? 'block' : 'none';
+                const closeBtn = document.getElementById('closeUpBtn'); if(up.forceUpdate) closeBtn.style.display = 'none'; else closeBtn.style.display = 'inline-block';
                 document.getElementById('updateOverlay').style.display = 'flex';
-                
-                // Reset UI to default button state
-                document.getElementById('upPercent').style.display = 'none';
-                document.getElementById('upProgressCont').style.display = 'none';
-                btn.classList.remove('hidden');
             } else { document.getElementById('updateOverlay').style.display = 'none'; }
         });
 
@@ -462,70 +459,11 @@
         });
     };
 
-    // --- Start Realtime App Update Download Logic ---
-    function startAppUpdate() {
-        if(!appUpdateData || !appUpdateData.buttonLink) return;
-
-        const url = appUpdateData.buttonLink;
-        const upBtn = document.getElementById('upBtn');
-        const upPercent = document.getElementById('upPercent');
-        const upProgressCont = document.getElementById('upProgressCont');
-        const upProgressBar = document.getElementById('upProgressBar');
-
-        // Hide update button, show progress
-        upBtn.classList.add('hidden');
-        upPercent.style.display = 'block';
-        upProgressCont.style.display = 'block';
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'blob';
-
-        xhr.onprogress = function(e) {
-            if (e.lengthComputable) {
-                const percent = Math.round((e.loaded / e.total) * 100);
-                upPercent.innerText = percent + "%";
-                upProgressBar.style.width = percent + "%";
-            }
-        };
-
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const blob = xhr.response;
-                const downloadUrl = window.URL.createObjectURL(blob);
-                
-                // Show Install Button
-                upPercent.innerText = "Download Complete!";
-                upBtn.classList.remove('hidden');
-                upBtn.innerText = "Install Now";
-                upBtn.style.background = "#00ff66";
-                
-                upBtn.onclick = function() {
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = downloadUrl;
-                    a.download = "update_morad_hasan.apk"; // Custom filename
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(downloadUrl);
-                };
-            } else {
-                alert("Download Failed! Please try again.");
-                upBtn.classList.remove('hidden');
-                upPercent.style.display = 'none';
-                upProgressCont.style.display = 'none';
-            }
-        };
-
-        xhr.onerror = function() {
-            alert("Error connecting to server.");
-            upBtn.classList.remove('hidden');
-        };
-
-        xhr.send();
+    function closeWelcomeDialog() {
+        document.getElementById('welcomeDialog').style.display = 'none';
+        document.getElementById('wdVideo').pause();
     }
 
-    function closeWelcomeDialog() { document.getElementById('welcomeDialog').style.display = 'none'; document.getElementById('wdVideo').pause(); }
     function updateNotifUI() {
         const lastCount = parseInt(localStorage.getItem('last_notif_count') || 0); const unread = notifications.length - lastCount;
         const mainBadge = document.getElementById('main-menu-badge'); const drawBadge = document.getElementById('drawer-notif-badge');
@@ -558,5 +496,3 @@
 </script>
   </body>
 </html>
-
---- END OF FILE index.html ---
