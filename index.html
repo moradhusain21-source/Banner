@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morad Hasan - Ultimate Pro Store</title>
+    <title>Welcome To - Android Application Source Code Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -20,33 +20,21 @@
             --text-color: #c9d1d9; --text-muted: #8b949e;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; transition: background 0.3s, color 0.3s; }
-        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; padding-bottom: 90px; }
+        body { background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; padding-bottom: 110px; }
 
-        /* Assistant Styles */
-        .robot-fab { width: 50px; height: 50px; background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; cursor: pointer; margin: 0 auto 10px; box-shadow: 0 4px 15px rgba(0,212,255,0.3); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        /* --- Assistant Styles Start --- */
+        .robot-fab { width: 50px; height: 50px; background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; cursor: pointer; margin: 0 auto 10px; box-shadow: 0 4px 15px rgba(0,212,255,0.3); animation: assistantFloat 3s ease-in-out infinite; }
+        @keyframes assistantFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
         
-        #assistant-pointer { position: fixed; width: 25px; height: 25px; background: rgba(255, 0, 0, 0.6); border: 2px solid white; border-radius: 50%; z-index: 10000; pointer-events: none; display: none; box-shadow: 0 0 15px red; transform: translate(-50%, -50%); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #assistant-pointer { position: fixed; width: 25px; height: 25px; background: rgba(255, 0, 0, 0.7); border: 2px solid white; border-radius: 50%; z-index: 10000; pointer-events: none; display: none; box-shadow: 0 0 15px red; transform: translate(-50%, -50%); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        .chat-container { display: flex; flex-direction: column; height: 350px; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
-        .chat-bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 0.85rem; line-height: 1.4; }
+        .chat-container { display: flex; flex-direction: column; height: 380px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 0.88rem; line-height: 1.4; position: relative; }
         .chat-bot { background: var(--border-color); align-self: flex-start; color: var(--text-color); border-bottom-left-radius: 2px; }
         .chat-user { background: var(--accent-color); align-self: flex-end; color: #000; border-bottom-right-radius: 2px; }
-        .chat-input-area { display: flex; gap: 10px; padding: 10px; border-top: 1px solid var(--border-color); }
-        .typing-dot { width: 6px; height: 6px; background: var(--text-muted); border-radius: 50%; display: inline-block; animation: typing 1s infinite; margin: 0 2px; }
-        @keyframes typing { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-        /* Welcome Video Dialog Styles */
-        .welcome-dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 7000; padding: 20px; }
-        .welcome-dialog-card { background: var(--surface-color); width: 100%; border-radius: 25px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid var(--border-color); animation: modalIn 0.4s ease; }
-        @keyframes modalIn { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
-        .wd-video-container { width: 100%; background: #000; line-height: 0; display: flex; justify-content: center; align-items: center; }
-        .wd-video-container video { width: 100%; height: auto; max-height: 70vh; }
-        .wd-content { padding: 20px; text-align: center; }
-        .wd-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; color: var(--accent-color); }
-        .wd-msg { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
-        .wd-close-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent-color); color: #000; font-weight: 800; font-size: 1rem; cursor: pointer; }
+        .chat-input-area { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border-color); }
+        /* --- Assistant Styles End --- */
 
         .update-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 5000; padding: 25px; }
         .update-card { background: var(--surface-color); width: 100%; max-width: 320px; border-radius: 25px; padding: 30px; text-align: center; border: 1px solid var(--border-color); }
@@ -77,10 +65,12 @@
         .header { position: sticky; top: 0; z-index: 1000; background: var(--surface-color); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .header .logo { font-size: 1.25rem; font-weight: 700; color: var(--accent-color); }
         
+        /* Badges */
         .notif-badge { background: #ef4444; color: white; font-size: 0.6rem; padding: 2px 6px; border-radius: 50px; font-weight: 800; display: none; }
         .menu-btn-container { position: relative; cursor: pointer; }
         .menu-badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; font-size: 10px; padding: 1px 5px; border-radius: 50px; display: none; border: 2px solid var(--surface-color); }
 
+        /* Notification Premium List (Messenger Style) */
         .notif-messenger-item { display: flex; align-items: center; gap: 15px; padding: 12px 15px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; }
         .notif-messenger-item:active { background: rgba(0, 212, 255, 0.05); }
         .notif-avatar { width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 212, 255, 0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--accent-color); flex-shrink: 0; }
@@ -98,20 +88,65 @@
         .cat-btn { background: var(--surface-color); border: 1px solid var(--border-color); color: var(--text-color); padding: 9px 18px; border-radius: 50px; white-space: nowrap; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
         .cat-btn.active { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-color); color: var(--accent-color); }
         .masonry-wrapper { padding: 0 15px; column-count: 2; column-gap: 15px; }
-        .card { break-inside: avoid; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 15px; display: block; overflow: hidden; position: relative; }
+        
+        /* Card Updated */
+        .card { break-inside: avoid; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; margin-bottom: 20px; display: block; overflow: hidden; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .card img { width: 100%; height: auto; display: block; }
-        .premium-badge { position: absolute; top: 10px; left: 10px; background: var(--premium-color); color: #000; padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; }
-        .card-body { padding: 12px; }
-        .card-title { font-size: 0.85rem; font-weight: 600; line-height: 1.4; margin-bottom: 8px; }
-        .card-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; }
-        .card-price { font-weight: 700; color: var(--premium-color); font-size: 0.9rem; }
+        .premium-badge { position: absolute; top: 10px; left: 10px; background: var(--premium-color); color: #000; padding: 4px 10px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .card-body { padding: 15px; }
+        .card-title { font-size: 0.9rem; font-weight: 700; line-height: 1.4; margin-bottom: 12px; color: var(--text-color); }
+        
+        /* Card Stats Design Improved */
+        .card-footer { border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .card-price { font-weight: 800; color: var(--premium-color); font-size: 1rem; }
+        .card-stats { display: flex; align-items: center; justify-content: space-between; background: var(--bg-color); padding: 8px 12px; border-radius: 12px; }
+        .card-stat-btn { border: none; background: transparent; color: var(--text-muted); display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+        .card-stat-btn i { font-size: 1rem; }
+        .card-stat-btn.liked, .card-stat-btn.liked i { color: #ff3366; }
+        .card-stat { display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
+
         #details-view { position: fixed; inset: 0; background: var(--bg-color); z-index: 2000; display: none; overflow-y: auto; padding-bottom: 40px; }
         .back-nav { padding: 15px 20px; display: flex; align-items: center; gap: 15px; background: var(--surface-color); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; }
         .detail-img { width: 100%; height: auto; display: block; }
         .detail-content { padding: 20px; }
         .info-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 10px 15px; margin-bottom: 20px; }
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        .info-row { display: flex; justify-content: space-between; gap: 15px; padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
         .info-row:last-child { border: none; }
+        .info-row span { color: var(--text-muted); font-weight: 600; }
+        .info-row b { text-align: right; word-break: break-word; color: var(--text-color); }
+        
+        /* Owner Card Redesign */
+        .owner-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 24px; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+        .owner-avatar { width: 90px; height: 90px; border-radius: 50%; border: 4px solid var(--accent-color); padding: 4px; background: linear-gradient(135deg, rgba(0,212,255,0.2), rgba(255,193,7,0.2)); margin-bottom: 15px; }
+        .owner-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .owner-label { font-size: 0.75rem; font-weight: 800; color: var(--premium-color); text-transform: uppercase; margin-bottom: 5px; background: rgba(255,193,7,0.1); padding: 2px 12px; border-radius: 50px; }
+        .owner-name { font-size: 1.2rem; font-weight: 900; color: var(--text-color); margin-bottom: 4px; }
+        .owner-role { font-size: 0.85rem; font-weight: 700; color: var(--accent-color); margin-bottom: 10px; }
+        .owner-bio { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 15px; padding: 0 10px; }
+        .owner-contact { background: var(--accent-color); color: #000; padding: 10px 20px; border-radius: 12px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: 0.3s; }
+        
+        /* Social Icons - Colorful & Glowing */
+        .owner-socials { display: flex; gap: 20px; margin-top: 20px; justify-content: center; }
+        .owner-socials a { font-size: 2.2rem; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-block; }
+        .owner-socials a.fb { color: #1877F2; }
+        .owner-socials a.tg { color: #24A1DE; }
+        .owner-socials a.yt { color: #FF0000; }
+        .owner-socials a.ig { color: #E4405F; }
+        
+        .owner-socials a:hover, .owner-socials a:active { transform: scale(1.2); filter: drop-shadow(0 0 8px currentColor); animation: glowAnim 1.5s infinite alternate; }
+        @keyframes glowAnim {
+            from { filter: drop-shadow(0 0 2px currentColor); }
+            to { filter: drop-shadow(0 0 15px currentColor); }
+        }
+
+        .image-picker { width: 100%; min-height: 88px; border: 1.5px dashed var(--border-color); border-radius: 14px; background: var(--bg-color); color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 800; cursor: pointer; overflow: hidden; text-align: center; padding: 12px; }
+        .image-picker i { color: var(--accent-color); font-size: 1.3rem; }
+        .image-preview { margin-top: 10px; width: 100%; max-height: 160px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border-color); display: none; }
+        .comments-list { max-height: 320px; overflow-y: auto; padding: 16px; }
+        .comment-item { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+        .comment-head { display: flex; justify-content: space-between; gap: 10px; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; }
+        .comment-name { color: var(--accent-color); font-weight: 900; }
+        .comment-text { font-size: 0.9rem; line-height: 1.45; white-space: pre-line; word-break: break-word; }
         .main-download-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; color: #000; }
         .tutorial-btn { width: 100%; margin-top: 12px; padding: 14px; border-radius: 12px; border: 2px solid var(--yt-color); background: transparent; color: var(--yt-color); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
         .description-box { margin-top: 25px; padding: 15px; background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; white-space: pre-line; }
@@ -129,37 +164,34 @@
         .wallet-brand { display: flex; align-items: center; gap: 12px; }
         .brand-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; }
         .copy-btn { background: var(--accent-color); color: black; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; cursor: pointer; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface-color); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { color: var(--text-muted); text-align: center; font-size: 0.75rem; flex: 1; cursor: pointer; }
+
+        /* Bottom Nav - Redesign */
+        .bottom-nav { position: fixed; bottom: 20px; left: 20px; right: 20px; display: flex; gap: 5px; padding: 12px; border-radius: 24px; background: rgba(15, 15, 15, 0.92); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.4); z-index: 9999; }
+        .nav-item { color: #888; text-align: center; font-size: 0.7rem; flex: 1; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: 0.3s; font-weight: 700; }
+        .nav-item i { font-size: 1.5rem; transition: 0.3s; }
         .nav-item.active { color: var(--accent-color); }
-        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+        .nav-item.active i { transform: translateY(-3px); filter: drop-shadow(0 0 5px var(--accent-color)); }
+
         .hidden { display: none !important; }
         .add-modal-content { padding: 20px; max-height: 80vh; overflow-y: auto; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
         .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); outline: none; }
         .form-textarea { height: 100px; resize: none; }
-        .add-fab { position: fixed; bottom: 100px; right: 20px; width: 56px; height: 56px; background: var(--accent-color); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(0,212,255,0.4); z-index: 999; cursor: pointer; }
+        .add-fab { position: fixed; bottom: 120px; right: 20px; width: 56px; height: 56px; background: var(--accent-color); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(0,212,255,0.4); z-index: 999; cursor: pointer; }
 </style>
-  </head>
+  
+<style>
+.input-error{ border:2px solid #ff3b30 !important; box-shadow:0 0 0 3px rgba(255,59,48,0.15); }
+.pm-item{opacity:0.6;transition:0.2s}
+.pm-item.active{opacity:1;transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+</style>
+
+</head>
   <body data-theme="light">
 
     <!-- Assistant Pointer -->
     <div id="assistant-pointer"></div>
-
-    <!-- Welcome Video Dialog HTML -->
-    <div class="welcome-dialog-overlay" id="welcomeDialog">
-        <div class="welcome-dialog-card" id="wdCard">
-            <div class="wd-video-container">
-                <video id="wdVideo" autoplay muted loop playsinline controlsList="nodownload" style="width: 100%; height: auto; display: block;"></video>
-            </div>
-            <div class="wd-content">
-                <h2 class="wd-title" id="wdTitleTxt">Welcome</h2>
-                <p class="wd-msg" id="wdMsgTxt">Welcome to our store.</p>
-                <button class="wd-close-btn" id="wdCloseBtn" onclick="closeWelcomeDialog()">Continue</button>
-            </div>
-        </div>
-    </div>
 
     <div class="modal" id="userWelcomeModal" style="z-index: 6000;">
         <div class="modal-box" style="padding: 25px; text-align: center;">
@@ -176,7 +208,7 @@
             <i class="fa-solid fa-cloud-arrow-down update-icon"></i>
             <h2 class="update-title" id="upTitle">Update Available!</h2>
             <p class="update-desc" id="upDesc">Please update to continue.</p>
-            <a href="javascript:void(0)" id="upBtn" class="update-btn">Update Now</a>
+            <a href="#" id="upBtn" class="update-btn">Update Now</a>
             <span id="closeUpBtn" class="close-update" onclick="closeUpdateDialog()">Later</span>
         </div>
     </div>
@@ -214,7 +246,7 @@
 	  </section>
 	  <div class="search-area">
         <!-- Assistant Robot Button -->
-        <div class="robot-fab" onclick="openAssistantChat()"><i class="fa-solid fa-robot"></i></div>
+        <div class="robot-fab" id="robot-btn" onclick="openAssistantChat()"><i class="fa-solid fa-robot"></i></div>
 		<div class="search-box">
 		  <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
 		  <input type="text" id="searchInput" placeholder="ফাইলের নাম লিখুন..." onkeyup="filterItems()">
@@ -233,7 +265,7 @@
             </div>
             <div class="chat-container">
                 <div class="chat-messages" id="assistantChatLog">
-                    <div class="chat-bubble chat-bot">হ্যালো! আমি আপনার স্মার্ট অ্যাসিস্ট্যান্ট। আমি আপনাকে কীভাবে সাহায্য করতে পারি? আপনি বলতে পারেন 'এডমিনকে মেসেজ দাও' অথবা 'কিভাবে ফাইল এড করতে হয়?'</div>
+                    <div class="chat-bubble chat-bot">হ্যালো! আমি আপনার স্মার্ট অ্যাসিস্ট্যান্ট। আমি কীভাবে সাহায্য করতে পারি? 🤖 বলতে পারেন 'এডমিনকে মেসেজ দাও' অথবা 'কিভাবে ফাইল এড করতে হয়?'</div>
                 </div>
                 <div class="chat-input-area">
                     <input type="text" id="assistantInput" class="form-input" placeholder="আপনার প্রশ্ন লিখুন..." style="margin-bottom: 0;">
@@ -250,15 +282,42 @@
 	  </div>
 	  <img src="" id="dImg" class="detail-img">
 	  <div class="detail-content">
-		<h2 id="dTitle" style="margin-bottom: 15px;">-</h2>
+		<h2 id="dTitle" style="margin-bottom: 14px;">-</h2>
+            <div class="owner-card" id="dOwnerCard">
+                <div class="owner-label"><i class="fa-solid fa-certificate"></i> Verified Creator</div>
+                <div class="owner-avatar">
+                    <img src="" id="dOwnerImg" alt="Owner" class="hidden">
+                    <i id="dOwnerIcon" class="fa-solid fa-user-tie" style="font-size: 2.5rem; color: var(--accent-color);"></i>
+                </div>
+                <div class="owner-name" id="dOwnerName">-</div>
+                <div class="owner-role" id="dOwnerRole">-</div>
+                <div class="owner-bio" id="dOwnerInfo">-</div>
+                <a class="owner-contact hidden" id="dOwnerContact" href="#"><i class="fa-solid fa-phone"></i><span id="dOwnerContactText">-</span></a>
+                <!-- Social Icons -->
+                <div class="owner-socials" id="dOwnerSocials">
+                    <a href="#" id="dFb" target="_blank" class="fb"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" id="dTg" target="_blank" class="tg"><i class="fa-brands fa-telegram"></i></a>
+                    <a href="#" id="dYt" target="_blank" class="yt"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" id="dIg" target="_blank" class="ig"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
 		<div class="info-card">
 		  <div class="info-row"><span>Category</span><b id="dCat">-</b></div>
+              <div class="info-row"><span>Software</span><b id="dSoftware">-</b></div>
 		  <div class="info-row"><span>Size</span><b id="dSize">-</b></div>
 		  <div class="info-row"><span>Price</span><b id="dPrice" style="color: var(--premium-color);">Free</b></div>
 		  <div class="info-row"><span>Format</span><b id="dFormat">-</b></div>
+              <div class="info-row"><span>License</span><b id="dLicense">-</b></div>
+              <div class="info-row"><span>Published</span><b id="dPublished">-</b></div>
+              <div class="info-row"><span>Updated</span><b id="dUpdated">-</b></div>
+              <div class="info-row"><span>Downloads</span><b id="dDownloads">-</b></div>
+              <div class="info-row"><span>Views</span><b id="dViews">-</b></div>
+              <div class="info-row"><span>Likes</span><b id="dLikes">-</b></div>
+              <div class="info-row"><span>Comments</span><b id="dComments">-</b></div>
 		</div>
 		<button class="main-download-btn" id="dActionBtn"><i class="fa-solid fa-download"></i> Download Project</button>
         <button class="tutorial-btn hidden" id="dTutorBtn"><i class="fa-brands fa-youtube"></i> Watch Tutorial</button>
+        <button class="tutorial-btn" style="border-color: var(--accent-color); color: var(--accent-color);" id="dCommentBtn" onclick="openComments()"><i class="fa-solid fa-comments"></i> View / Add Comment</button>
 		<div id="captcha-section" class="hidden">
 		  <div class="captcha-container">
               <div class="captcha-box">
@@ -276,6 +335,7 @@
 	  </div>
     </div>
 
+    <!-- Notification List Modal -->
     <div class="modal" id="notifListModal">
         <div class="modal-box" style="border-radius: 20px;">
             <div style="padding: 18px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
@@ -288,6 +348,7 @@
         </div>
     </div>
 
+    <!-- Notification Details Modal -->
     <div class="modal" id="notifDetailModal">
         <div class="modal-box" style="padding: 25px; border-radius: 25px;">
             <h3 id="ndTitle" style="color: var(--accent-color); margin-bottom: 10px;">-</h3>
@@ -302,17 +363,44 @@
             <div class="payment-header" style="background: var(--surface-color); color: var(--text-color); border-bottom: 1px solid var(--border-color); padding: 15px;">
                 <h3 style="display: flex; align-items: center; gap: 10px; font-size: 1.1rem;"><i class="fa-solid fa-plus" style="font-size: 1rem;"></i> Add New Resource / File</h3>
             </div>
-            <div class="add-modal-content">
+            <div class="add-modal-content" id="addModalContent">
                 <div class="form-group"><label>File Title Name</label><input type="text" id="addTitle" class="form-input"></div>
                 <div class="form-group"><label>File Description</label><textarea id="addDesc" class="form-input form-textarea"></textarea></div>
                 <div class="form-group"><label>Category Type</label><select id="addCat" class="form-input"></select></div>
-                <div class="form-group"><label>Thumbnail URL</label><input type="text" id="addThumb" class="form-input"></div>
-                <div class="form-group"><label>File Size</label><input type="text" id="addSize" class="form-input"></div>
+                <div class="form-group">
+                    <label>Thumbnail Image</label>
+                    <input type="hidden" id="addThumb">
+                    <input type="file" id="thumbFile" accept="image/*" class="hidden" onchange="handleImagePick(event, 'addThumb', 'thumbPreview')">
+                    <button type="button" class="image-picker" id="thumbPickerBtn" onclick="pickImage('thumbFile')"><i class="fa-solid fa-plus"></i> Select Thumbnail From Gallery</button>
+                    <img id="thumbPreview" class="image-preview" alt="Thumbnail Preview">
+                </div>
+                <div class="form-group"><label>Owner Name</label><input type="text" id="addOwnerName" class="form-input" placeholder="Example: A B C D"></div>
+                <div class="form-group">
+                    <label>Owner Photo</label>
+                    <input type="hidden" id="addOwnerPhoto">
+                    <input type="file" id="ownerPhotoFile" accept="image/*" class="hidden" onchange="handleImagePick(event, 'addOwnerPhoto', 'ownerPhotoPreview')">
+                    <button type="button" class="image-picker" id="ownerPickerBtn" onclick="pickImage('ownerPhotoFile')"><i class="fa-solid fa-plus"></i> Select Owner Photo From Gallery</button>
+                    <img id="ownerPhotoPreview" class="image-preview" alt="Owner Photo Preview">
+                </div>
+                <div class="form-group"><label>Owner Role / Title</label><input type="text" id="addOwnerRole" class="form-input" placeholder="Example: Programmer / Designer"></div>
+                <div class="form-group"><label>Owner Contact Number</label><input type="tel" id="addOwnerContact" class="form-input" placeholder="Example: 01XXXXXXXXX"></div>
+                <div class="form-group"><label>Owner Contact 2 (Optional)</label><input type="tel" id="addOwnerContact2" class="form-input" placeholder="Optional"></div>
+                <div class="form-group"><label>Owner Contact 3 (Optional)</label><input type="tel" id="addOwnerContact3" class="form-input" placeholder="Optional"></div>
+                <div class="form-group"><label>Owner Contact 4 (Optional)</label><input type="tel" id="addOwnerContact4" class="form-input" placeholder="Optional"></div>
+                
+                <!-- Social Links Input -->
+                <div class="form-group"><label>Facebook Link</label><input type="text" id="addFb" class="form-input" value="https://www.facebook.com/morad.hasan.905911"></div>
+                <div class="form-group"><label>Telegram Link</label><input type="text" id="addTg" class="form-input" value="https://t.me/moradhasan100"></div>
+                <div class="form-group"><label>Instagram Link</label><input type="text" id="addIg" class="form-input" placeholder="Instagram URL"></div>
+
+                <div class="form-group"><label>Owner Information</label><textarea id="addOwnerInfo" class="form-input form-textarea" placeholder="Short bio, usage note or creator details"></textarea></div>
                 <div class="form-group"><label>Price (BDT)</label><input type="number" id="addPrice" class="form-input" value="0"></div>
                 <div class="form-group"><label>Download URL</label><input type="text" id="addDL" class="form-input"></div>
                 <div class="form-group"><label>Tutorial URL</label><input type="text" id="addTutor" class="form-input"></div>
                 <div class="form-group"><label>Required Software</label><input type="text" id="addSoft" class="form-input" value="PixelLab"></div>
                 <div class="form-group"><label>Format</label><input type="text" id="addFormat" class="form-input" value=".PLP"></div>
+                <div class="form-group"><label>License / Usage</label><input type="text" id="addLicense" class="form-input" placeholder="Personal / Commercial / Research use"></div>
+                <div class="form-group"><label>Published Date</label><input type="text" id="addPublished" class="form-input" placeholder="Auto today, or write custom date"></div>
                 <div style="display: flex; gap: 10px; margin-top: 10px; margin-bottom: 20px;">
                     <button class="main-download-btn" id="cancelAddBtn" style="background: var(--border-color); flex: 1;" onclick="closeModal('addResourceModal')">Cancel</button>
                     <button class="main-download-btn" id="submitAddBtn" style="background: var(--accent-color); flex: 2;" onclick="saveNewResource()">Add Now</button>
@@ -321,10 +409,36 @@
         </div>
     </div>
 
+    <div class="modal" id="commentsModal">
+        <div class="modal-box" style="border-radius: 18px;">
+            <div class="payment-header" style="background: var(--surface-color); color: var(--text-color); border-bottom: 1px solid var(--border-color); padding: 15px;">
+                <h3 style="display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-comments" style="color: var(--accent-color);"></i> Comments</h3>
+            </div>
+            <div id="commentsList" class="comments-list">
+                <div style="padding:25px; text-align:center; color:var(--text-muted);">No comments yet</div>
+            </div>
+            <div style="padding: 0 16px 16px;">
+                <textarea id="commentInput" class="form-input form-textarea" style="height:90px;" placeholder="Write your comment..."></textarea>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button class="main-download-btn" style="background: var(--border-color); flex: 1;" onclick="closeModal('commentsModal')">Close</button>
+                    <button class="main-download-btn" style="background: var(--accent-color); flex: 1.4;" onclick="submitComment()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="paymentModal">
 	  <div class="modal-box">
 		<div class="payment-header"><i class="fa-solid fa-crown"></i><h3>Unlock Premium Content</h3></div>
-        <div class="wallet-container">
+        
+<div class="payment-methods" style="display:flex;gap:6px;justify-content:center;padding:10px;">
+  <div class="pm-item active" onclick="setPaymentMethod('bkash')" style="padding:6px 10px;border-radius:20px;background:#E2136E;color:#fff;font-size:12px;cursor:pointer;">bKash</div>
+  <div class="pm-item" onclick="setPaymentMethod('nagad')" style="padding:6px 10px;border-radius:20px;background:#F6921E;color:#fff;font-size:12px;cursor:pointer;">Nagad</div>
+  <div class="pm-item" onclick="setPaymentMethod('rocket')" style="padding:6px 10px;border-radius:20px;background:#8C3494;color:#fff;font-size:12px;cursor:pointer;">Rocket</div>
+  <div class="pm-item" onclick="setPaymentMethod('upay')" style="padding:6px 10px;border-radius:20px;background:#111;color:#fff;font-size:12px;cursor:pointer;">Upay</div>
+</div>
+
+<div class="wallet-container">
             <div id="walletList"></div>
             <input type="text" id="secretCode" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--premium-color); text-align: center;" placeholder="গোপন কোড দিন">
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -358,10 +472,10 @@
     </div>
 
     <nav class="bottom-nav">
-	  <div class="nav-item active" onclick="showHome()"><i class="fa-solid fa-house"></i>Home</div>
-	  <div class="nav-item" onclick="document.getElementById('searchInput').focus()"><i class="fa-solid fa-magnifying-glass"></i>Search</div>
-	  <div class="nav-item" onclick="toggleDrawer(true)"><i class="fa-solid fa-bars-staggered"></i>Menu</div>
-	  <div class="nav-item" onclick="toggleTheme()"><i class="fa-solid fa-circle-half-stroke"></i>Mode</div>
+	  <div class="nav-item active" onclick="showHome()"><i class="fa-solid fa-house-user"></i>Home</div>
+	  <div class="nav-item" onclick="document.getElementById('searchInput').focus()"><i class="fa-solid fa-magnifying-glass-plus"></i>Search</div>
+	  <div class="nav-item" onclick="toggleDrawer(true)"><i class="fa-solid fa-bars-progress"></i>Menu</div>
+	  <div class="nav-item" onclick="toggleTheme()"><i class="fa-solid fa-palette"></i>Theme</div>
     </nav>
 
 <script>
@@ -380,7 +494,8 @@
         else if (document.getElementById('aboutModal').style.display === 'flex') { closeModal('aboutModal'); } 
         else if (document.getElementById('notifListModal').style.display === 'flex') { closeModal('notifListModal'); } 
         else if (document.getElementById('notifDetailModal').style.display === 'flex') { closeModal('notifDetailModal'); } 
-        else if (document.getElementById('assistantModal').style.display === 'flex') { closeModal('assistantModal'); } 
+        else if (document.getElementById('commentsModal').style.display === 'flex') { closeModal('commentsModal'); }
+        else if (document.getElementById('assistantModal').style.display === 'flex') { closeModal('assistantModal'); }
         else if (document.getElementById('navDrawer').classList.contains('active')) { toggleDrawer(false); }
     });
     function pushBackState() { history.pushState({ page: 'internal' }, ''); }
@@ -394,153 +509,554 @@
     function registerUser() {
         const name = document.getElementById('regName').value.trim();
         if(!name) return alert("Please enter your name!");
-        const deviceInfo = { name: name, platform: navigator.platform, userAgent: navigator.userAgent, language: navigator.language, screen: `${window.screen.width}x${window.screen.height}`, joined: new Date().toLocaleString() };
-        db.ref('users/' + userId).set(deviceInfo).then(() => { db.ref('stats/totalInstalls').transaction(curr => (curr || 0) + 1); localStorage.setItem('app_user_name', name); closeModal('userWelcomeModal'); startPresence(); });
+        const deviceInfo = {
+            name: name, platform: navigator.platform, userAgent: navigator.userAgent,
+            language: navigator.language, screen: `${window.screen.width}x${window.screen.height}`,
+            joined: new Date().toLocaleString()
+        };
+        db.ref('users/' + userId).set(deviceInfo).then(() => {
+            db.ref('stats/totalInstalls').transaction(curr => (curr || 0) + 1);
+            localStorage.setItem('app_user_name', name);
+            closeModal('userWelcomeModal');
+            startPresence();
+        });
     }
 
-    function startPresence() { const presenceRef = db.ref('activeUsers/' + userId); presenceRef.set(true); presenceRef.onDisconnect().remove(); }
+    function startPresence() {
+        const presenceRef = db.ref('activeUsers/' + userId);
+        presenceRef.set(true);
+        presenceRef.onDisconnect().remove();
+    }
 
     let projects = [];
     let notifications = [];
     let currentActiveProject = null;
     let isUnlocked = false;
+    let currentCommentProjectId = null;
 
     window.onload = function() {
         if(localStorage.getItem('theme') === 'dark') toggleTheme();
         if(!localStorage.getItem('app_user_name')) { openModal('userWelcomeModal'); } else { startPresence(); }
         
-        const unlockAudio = () => {
-            const video = document.getElementById('wdVideo');
-            if (video) {
-                video.muted = false;
-                video.play().catch(() => {});
-            }
-            document.removeEventListener('touchstart', unlockAudio);
-            document.removeEventListener('click', unlockAudio);
-        };
-        document.addEventListener('touchstart', unlockAudio);
-        document.addEventListener('click', unlockAudio);
-
-        db.ref('welcomeDialog').on('value', s => {
-            const v = s.val();
-            const overlay = document.getElementById('welcomeDialog');
-            if(v && v.enabled) {
-                document.getElementById('wdTitleTxt').innerText = v.title || "";
-                document.getElementById('wdMsgTxt').innerText = v.message || "";
-                document.getElementById('wdCard').style.maxWidth = (v.maxWidth || 320) + "px";
-                document.getElementById('wdCloseBtn').style.display = v.showCancel ? 'block' : 'none';
-                
-                const video = document.getElementById('wdVideo');
-                if(v.videoUrl) {
-                    video.src = v.videoUrl;
-                    video.muted = true;
-                    video.play().then(() => {
-                        video.muted = false;
-                    }).catch(e => {
-                        video.muted = true;
-                        video.play();
-                    });
-                }
-                overlay.style.display = 'flex';
-            } else {
-                overlay.style.display = 'none';
-                document.getElementById('wdVideo').pause();
-            }
-        });
-
         db.ref('appUpdate').on('value', s => {
             const up = s.val();
             if(up && up.showDialog) {
                 document.getElementById('upTitle').innerText = up.title || "Update Available!";
                 document.getElementById('upDesc').innerText = up.description || "";
-                const btn = document.getElementById('upBtn'); 
-                btn.innerText = up.buttonText || "Update Now"; 
-                btn.onclick = function() { 
-                    triggerDirectDownload(up.buttonLink); 
-                };
+                const btn = document.getElementById('upBtn');
+                btn.innerText = up.buttonText || "Update Now";
+                btn.href = up.buttonLink || "#";
                 btn.style.display = up.showButton ? 'block' : 'none';
-                const closeBtn = document.getElementById('closeUpBtn'); if(up.forceUpdate) closeBtn.style.display = 'none'; else closeBtn.style.display = 'inline-block';
+                const closeBtn = document.getElementById('closeUpBtn');
+                if(up.forceUpdate) closeBtn.style.display = 'none';
+                else closeBtn.style.display = 'inline-block';
                 document.getElementById('updateOverlay').style.display = 'flex';
-            } else { document.getElementById('updateOverlay').style.display = 'none'; }
+            } else {
+                document.getElementById('updateOverlay').style.display = 'none';
+            }
         });
 
+        // Notifications Listener
         db.ref('notifications').on('value', s => {
             notifications = [];
-            if(s.val()) { for(let k in s.val()) { notifications.push({ id: k, ...s.val()[k] }); } notifications.reverse(); }
+            if(s.val()) {
+                for(let k in s.val()) { notifications.push({ id: k, ...s.val()[k] }); }
+                notifications.reverse();
+            }
             updateNotifUI();
         });
 
         db.ref('siteSettings').on('value', s => {
             const v = s.val();
             if(v) {
-                document.getElementById('siteName').innerText = v.siteName || "Morad Hasan"; document.getElementById('siteNameHeader').innerText = v.siteName || "Morad Hasan"; document.getElementById('siteHeroTitle').innerHTML = v.heroTitle || "কেমন আছেন <span>❓</span>"; document.getElementById('siteHeroDesc').innerText = v.siteDesc || "";
-                const fab = document.getElementById('add-fab-btn'); if(v.showAddButton === true) fab.classList.remove('hidden'); else fab.classList.add('hidden');
+                document.getElementById('siteName').innerText = v.siteName || "Morad Hasan";
+                document.getElementById('siteNameHeader').innerText = v.siteName || "Morad Hasan";
+                document.getElementById('siteHeroTitle').innerHTML = v.heroTitle || "কেমন আছেন <span>❓</span>";
+                document.getElementById('siteHeroDesc').innerText = v.siteDesc || "";
+                const fab = document.getElementById('add-fab-btn');
+                if(v.showAddButton === true) fab.classList.remove('hidden'); else fab.classList.add('hidden');
             }
         });
 
         db.ref('categories').on('value', s => {
-            const cont = document.getElementById('catList'); cont.innerHTML = `<button class="cat-btn active" onclick="filterCategory('all', this)">All Files</button>`;
+            const cont = document.getElementById('catList');
+            cont.innerHTML = `<button class="cat-btn active" onclick="filterCategory('all', this)">All Files</button>`;
             if(s.val()) {
                 const cats = Array.isArray(s.val()) ? s.val() : Object.values(s.val());
                 cats.forEach(cat => { cont.innerHTML += `<button class="cat-btn" onclick="filterCategory('${cat}', this)">${cat}</button>`; });
-                const sel = document.getElementById('addCat'); if(sel) { sel.innerHTML = ""; cats.forEach(cat => { sel.innerHTML += `<option value="${cat}">${cat}</option>`; }); }
+                const sel = document.getElementById('addCat');
+                if(sel) {
+                    sel.innerHTML = "";
+                    cats.forEach(cat => { sel.innerHTML += `<option value="${cat}">${cat}</option>`; });
+                }
             }
         });
 
         db.ref('projects').on('value', s => {
-            projects = []; if(s.val()) { for(let k in s.val()) { projects.push({ id: k, ...s.val()[k] }); } projects.reverse(); }
-            renderGrid(); document.getElementById('loading-spinner-container').classList.add('hidden');
+            projects = [];
+            if(s.val()) {
+                for(let k in s.val()) {
+                    projects.push({ id: k, ...s.val()[k] });
+                }
+                projects.reverse();
+            }
+            renderGrid();
+            document.getElementById('loading-spinner-container').classList.add('hidden');
         });
 
         db.ref('wallets').on('value', s => {
             const w = s.val(); const list = document.getElementById('walletList'); list.innerHTML = "";
-            if(w) { const brands = { bkash: 'bKash', nagad: 'Nagad', rocket: 'Rocket', binance: 'Binance' }; for(let key in w) { if(!w[key]) continue; list.innerHTML += `<div class="wallet-item-card"><div class="wallet-brand"><div class="brand-icon" style="background: var(--${key}-color, #333)">${brands[key][0]}</div><div class="wallet-details"><b>${brands[key]}</b><br><small>${w[key]}</small></div></div><button class="copy-btn" onclick="navigator.clipboard.writeText('${w[key]}').then(()=>alert('Copied!'))">Copy</button></div>`; } }
+            if(w) {
+                const brands = { bkash: 'bKash', nagad: 'Nagad', rocket: 'Rocket', binance: 'Binance' };
+                for(let key in w) {
+                    if(!w[key]) continue;
+                    list.innerHTML += `<div class="wallet-item-card"><div class="wallet-brand"><div class="brand-icon" style="background: var(--${key}-color, #333)">${brands[key][0]}</div><div class="wallet-details"><b>${brands[key]}</b><br><small>${w[key]}</small></div></div><button class="copy-btn" onclick="navigator.clipboard.writeText('${w[key]}').then(()=>alert('Copied!'))">Copy</button></div>`;
+                }
+            }
         });
     };
 
-    function closeWelcomeDialog() {
-        document.getElementById('welcomeDialog').style.display = 'none';
-        document.getElementById('wdVideo').pause();
-    }
-
     function updateNotifUI() {
-        const lastCount = parseInt(localStorage.getItem('last_notif_count') || 0); const unread = notifications.length - lastCount;
-        const mainBadge = document.getElementById('main-menu-badge'); const drawBadge = document.getElementById('drawer-notif-badge');
-        if(unread > 0) { mainBadge.innerText = unread > 9 ? "9+" : unread; mainBadge.style.display = "block"; drawBadge.innerText = unread; drawBadge.style.display = "block"; } else { mainBadge.style.display = "none"; drawBadge.style.display = "none"; }
-    }
-    function openNotifList() {
-        toggleDrawer(false); openModal('notifListModal'); localStorage.setItem('last_notif_count', notifications.length); updateNotifUI();
-        const cont = document.getElementById('notifContainer'); if(notifications.length === 0) { cont.innerHTML = `<div style="padding: 50px 20px; text-align: center; color: var(--text-muted);"><i class="fa-regular fa-envelope-open" style="font-size: 2.5rem; display: block; margin-bottom: 10px; opacity: 0.3;"></i>No messages here</div>`; return; }
-        cont.innerHTML = ""; notifications.forEach(n => { const date = new Date(n.time).toLocaleDateString(); cont.innerHTML += `<div class="notif-messenger-item" onclick="openNotifDetails('${n.id}')"><div class="notif-avatar"><i class="fa-solid fa-bell"></i></div><div class="notif-body"><span class="notif-title-row">${n.title}</span><span class="notif-msg-row">${n.message}</span><span class="notif-time-row">${date}</span></div></div>`; });
-    }
-    function openNotifDetails(id) { const n = notifications.find(x => x.id === id); if(!n) return; document.getElementById('ndTitle').innerText = n.title; document.getElementById('ndMsg').innerText = n.message; const btnArea = document.getElementById('ndLinkBtnArea'); btnArea.innerHTML = ""; if(n.link) { btnArea.innerHTML = `<button class="main-download-btn" style="background: var(--accent-color);" onclick="window.open('${n.link}', '_blank')">🚀 View Link / Action</button>`; } openModal('notifDetailModal'); }
-    function renderGrid() { const grid = document.getElementById('itemsGrid'); grid.innerHTML = ""; projects.forEach(p => { const isPremium = (p.price > 0 || p.category === "Premium"); const card = document.createElement('div'); card.className = "card"; card.innerHTML = `<div>${isPremium ? '<div class="premium-badge"><i class="fa-solid fa-crown"></i> PREMIUM</div>' : ''}<img src="${p.img}"></div><div class="card-body"><div class="card-title">${p.title}</div><div class="card-meta"><span class="card-price">৳${p.price || 0}</span><span style="font-size:0.7rem;">${p.size || ''}</span></div></div>`; card.onclick = () => openDetails(p); grid.appendChild(card); }); }
-    function openDetails(p) { pushBackState(); currentActiveProject = p; isUnlocked = false; document.getElementById('details-view').style.display = 'block'; document.getElementById('dImg').src = p.img; document.getElementById('dTitle').innerText = p.title; document.getElementById('dCat').innerText = p.category; document.getElementById('dSize').innerText = p.size || "N/A"; document.getElementById('dFormat').innerText = p.fileFormat || p.format || ".PLP"; document.getElementById('dPrice').innerText = p.price > 0 ? "৳" + p.price : "Free"; document.getElementById('captchaCheck').checked = false; document.getElementById('captchaCheck').disabled = false; document.getElementById('timerText').innerText = ""; document.getElementById('finalLink').style.display = "none"; document.getElementById('captcha-section').classList.add('hidden'); document.getElementById('dActionBtn').classList.remove('hidden'); const tBtn = document.getElementById('dTutorBtn'); if(p.tutorialUrl) { tBtn.classList.remove('hidden'); tBtn.onclick = () => window.open(p.tutorialUrl, '_blank'); } else { tBtn.classList.add('hidden'); } const dBox = document.getElementById('dDescBox'); if(p.description) { document.getElementById('dDescText').innerText = p.description; dBox.classList.remove('hidden'); } else { dBox.classList.add('hidden'); } updateDownloadBtn(); window.scrollTo(0,0); }
-    function updateDownloadBtn() { const btn = document.getElementById('dActionBtn'); const isPremium = currentActiveProject.price > 0 || currentActiveProject.category === "Premium"; if(isPremium && !isUnlocked) { btn.innerHTML = `<i class="fa-solid fa-crown"></i> Unlock Premium File`; btn.style.background = "var(--premium-color)"; btn.onclick = () => openModal('paymentModal'); } else { btn.innerHTML = `<i class="fa-solid fa-download"></i> Download Project Now`; btn.style.background = "var(--accent-color)"; btn.onclick = () => { btn.classList.add('hidden'); document.getElementById('captcha-section').classList.remove('hidden'); }; } }
-    function startTimer() { document.getElementById('captchaCheck').disabled = true; let time = 14; const txt = document.getElementById('timerText'); const link = document.getElementById('finalLink'); txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; const itv = setInterval(() => { time--; if(time > 0) { txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; } else { clearInterval(itv); txt.innerText = "আপনার লিঙ্ক তৈরি!"; link.style.display = "block"; } }, 1000); }
-    
-    function handleDownload() { 
-        if(currentActiveProject && currentActiveProject.downloadUrl) {
-            triggerDirectDownload(currentActiveProject.downloadUrl);
+        const lastCount = parseInt(localStorage.getItem('last_notif_count') || 0);
+        const unread = notifications.length - lastCount;
+        
+        const mainBadge = document.getElementById('main-menu-badge');
+        const drawBadge = document.getElementById('drawer-notif-badge');
+        
+        if(unread > 0) {
+            mainBadge.innerText = unread > 9 ? "9+" : unread;
+            mainBadge.style.display = "block";
+            drawBadge.innerText = unread;
+            drawBadge.style.display = "block";
+        } else {
+            mainBadge.style.display = "none";
+            drawBadge.style.display = "none";
         }
     }
 
-    function triggerDirectDownload(url) {
-        const link = document.createElement('a');
-        link.href = url;
-        const fileName = url.substring(url.lastIndexOf('/') + 1).split(/[?#]/)[0];
-        link.setAttribute('download', fileName);
-        link.setAttribute('target', '_blank');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    function openNotifList() {
+        toggleDrawer(false);
+        openModal('notifListModal');
+        localStorage.setItem('last_notif_count', notifications.length);
+        updateNotifUI();
+        
+        const cont = document.getElementById('notifContainer');
+        if(notifications.length === 0) {
+            cont.innerHTML = `<div style="padding: 50px 20px; text-align: center; color: var(--text-muted);"><i class="fa-regular fa-envelope-open" style="font-size: 2.5rem; display: block; margin-bottom: 10px; opacity: 0.3;"></i>No messages here</div>`;
+            return;
+        }
+        cont.innerHTML = "";
+        notifications.forEach(n => {
+            const date = new Date(n.time).toLocaleDateString();
+            cont.innerHTML += `
+                <div class="notif-messenger-item" onclick="openNotifDetails('${n.id}')">
+                    <div class="notif-avatar"><i class="fa-solid fa-bell"></i></div>
+                    <div class="notif-body">
+                        <span class="notif-title-row">${n.title}</span>
+                        <span class="notif-msg-row">${n.message}</span>
+                        <span class="notif-time-row">${date}</span>
+                    </div>
+                </div>
+            `;
+        });
     }
 
-    function verifyCode() { const code = document.getElementById('secretCode').value.trim(); if(currentActiveProject.secretCode && code.toLowerCase() === currentActiveProject.secretCode.toString().toLowerCase()) { isUnlocked = true; closeModal('paymentModal'); updateDownloadBtn(); } else { alert("ভুল কোড!"); } }
-    function sendTelegramMsg() { const n = document.getElementById('userName').value; const m = document.getElementById('userMsg').value; if(!n || !m) return alert("সব তথ্য দিন!"); fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: `📩 Support Request:\nName: ${n}\nMessage: ${m}` }) }).then(res => { if(res.ok) { alert("পাঠানো হয়েছে!"); closeModal('chatModal'); } }); }
-    function filterCategory(cat, btn) { document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); const cards = document.querySelectorAll('.card'); projects.forEach((p, i) => { cards[i].style.display = (cat === 'all' || p.category === cat) ? "block" : "none"; }); }
-    function filterItems() { const q = document.getElementById('searchInput').value.toLowerCase(); const cards = document.querySelectorAll('.card'); projects.forEach((p, i) => { cards[i].style.display = p.title.toLowerCase().includes(q) ? "block" : "none"; }); }
-    function toggleTheme() { const b = document.body; if(b.getAttribute('data-theme') === 'dark') b.setAttribute('data-theme', 'light'); else b.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', b.getAttribute('data-theme')); }
+    function openNotifDetails(id) {
+        const n = notifications.find(x => x.id === id);
+        if(!n) return;
+        document.getElementById('ndTitle').innerText = n.title;
+        document.getElementById('ndMsg').innerText = n.message;
+        const btnArea = document.getElementById('ndLinkBtnArea');
+        btnArea.innerHTML = "";
+        if(n.link) {
+            btnArea.innerHTML = `<button class="main-download-btn" style="background: var(--accent-color);" onclick="window.open('${n.link}', '_blank')">🚀 View Link / Action</button>`;
+        }
+        openModal('notifDetailModal');
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('itemsGrid'); grid.innerHTML = "";
+        projects.forEach(p => {
+            const isPremium = (p.price > 0 || p.category === "Premium");
+            const card = document.createElement('div'); card.className = "card";
+            const liked = isLiked(p.id);
+            const priceText = isPremium ? `Premium${p.price > 0 ? ' ৳' + p.price : ''}` : 'Free';
+            card.innerHTML = `
+                <div>
+                    ${isPremium ? '<div class="premium-badge"><i class="fa-solid fa-crown"></i> PREMIUM</div>' : ''}
+                    <img src="${escapeAttr(p.img || '')}" onerror="this.style.display='none'">
+                </div>
+                <div class="card-body">
+                    <div class="card-title">${escapeHtml(p.title || 'Untitled')}</div>
+                    <div class="card-footer">
+                        <span class="card-price">${escapeHtml(priceText)}</span>
+                        <div class="card-stats">
+                            <button class="card-stat-btn ${liked ? 'liked' : ''}" data-action="like" title="Love"><i class="${liked ? 'fa-solid' : 'fa-regular'} fa-heart"></i><span>${formatCount(getCount(p.likeCount || p.likes))}</span></button>
+                            <button class="card-stat-btn" data-action="comment" title="Comment"><i class="fa-regular fa-comment"></i><span>${formatCount(getCount(p.commentCount || p.commentsCount))}</span></button>
+                            <span class="card-stat" title="Views"><i class="fa-regular fa-eye"></i><span>${formatCount(getCount(p.viewCount || p.views))}</span></span>
+                        </div>
+                    </div>
+                </div>`;
+            card.addEventListener('click', () => openDetails(p));
+            const likeBtn = card.querySelector('[data-action="like"]');
+            const commentBtn = card.querySelector('[data-action="comment"]');
+            if(likeBtn) likeBtn.addEventListener('click', (e) => toggleLike(e, p.id));
+            if(commentBtn) commentBtn.addEventListener('click', (e) => openCommentsFromCard(e, p.id));
+            grid.appendChild(card);
+        });
+    }
+
+
+    function escapeHtml(value) {
+        return (value === undefined || value === null ? '' : String(value))
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function escapeAttr(value) { return escapeHtml(value); }
+
+    function getCount(value) {
+        if(value === undefined || value === null || value === '') return 0;
+        if(typeof value === 'number') return value;
+        const n = parseInt(String(value).replace(/[^0-9]/g, ''), 10);
+        return isNaN(n) ? 0 : n;
+    }
+
+    function formatCount(value) {
+        const n = getCount(value);
+        if(n >= 1000000) return (n / 1000000).toFixed(n % 1000000 ? 1 : 0) + 'M';
+        if(n >= 1000) return (n / 1000).toFixed(n % 1000 ? 1 : 0) + 'k';
+        return String(n);
+    }
+
+    function formatFullCount(value) { return getCount(value).toLocaleString('en-US'); }
+
+    function formatDateValue(value, fallback = 'N/A') {
+        if(!value) return fallback;
+        if(typeof value === 'number') {
+            const d = new Date(value);
+            if(!isNaN(d.getTime())) return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+        }
+        return String(value);
+    }
+
+    function todayText() {
+        return new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function getLikedIds() {
+        try { return JSON.parse(localStorage.getItem('liked_project_ids') || '{}'); }
+        catch(e) { return {}; }
+    }
+
+    function setLiked(id, value) {
+        const likes = getLikedIds();
+        if(value) likes[id] = true; else delete likes[id];
+        localStorage.setItem('liked_project_ids', JSON.stringify(likes));
+    }
+
+    function isLiked(id) { return !!getLikedIds()[id]; }
+
+    function incrementProjectCounter(projectId, field) {
+        if(!projectId) return;
+        db.ref('projects/' + projectId + '/' + field).transaction(curr => getCount(curr) + 1);
+    }
+
+    function decrementProjectCounter(projectId, field) {
+        if(!projectId) return;
+        db.ref('projects/' + projectId + '/' + field).transaction(curr => Math.max(getCount(curr) - 1, 0));
+    }
+
+    function toggleLike(event, projectId) {
+        if(event) event.stopPropagation();
+        if(!projectId) return;
+        const liked = isLiked(projectId);
+        if(liked) {
+            setLiked(projectId, false);
+            db.ref('projectLikes/' + projectId + '/' + userId).remove();
+            decrementProjectCounter(projectId, 'likeCount');
+        } else {
+            setLiked(projectId, true);
+            db.ref('projectLikes/' + projectId + '/' + userId).set(true);
+            incrementProjectCounter(projectId, 'likeCount');
+        }
+        renderGrid();
+    }
+
+    function openCommentsFromCard(event, projectId) {
+        if(event) event.stopPropagation();
+        openComments(projectId);
+    }
+
+    function openComments(projectId) {
+        if(!projectId && currentActiveProject) projectId = currentActiveProject.id;
+        if(!projectId) return;
+        currentCommentProjectId = projectId;
+        document.getElementById('commentInput').value = '';
+        openModal('commentsModal');
+        loadComments(projectId);
+    }
+
+    function loadComments(projectId) {
+        const list = document.getElementById('commentsList');
+        list.innerHTML = `<div style="padding:25px; text-align:center; color:var(--text-muted);">Loading...</div>`;
+        db.ref('projectComments/' + projectId).limitToLast(50).once('value', snap => {
+            const comments = [];
+            if(snap.val()) {
+                for(let k in snap.val()) comments.push({ id: k, ...snap.val()[k] });
+                comments.sort((a,b) => getCount(a.time) - getCount(b.time));
+            }
+            if(comments.length === 0) {
+                list.innerHTML = `<div style="padding:25px; text-align:center; color:var(--text-muted);">No comments yet</div>`;
+                return;
+            }
+            list.innerHTML = comments.map(c => {
+                const date = c.time ? new Date(c.time).toLocaleString() : '';
+                return `<div class="comment-item"><div class="comment-head"><span class="comment-name">${escapeHtml(c.name || 'User')}</span><span>${escapeHtml(date)}</span></div><div class="comment-text">${escapeHtml(c.text || '')}</div></div>`;
+            }).join('');
+            list.scrollTop = list.scrollHeight;
+        });
+    }
+
+    function submitComment() {
+        const text = document.getElementById('commentInput').value.trim();
+        if(!text) return alert('Please write a comment.');
+        if(!currentCommentProjectId) return;
+        const name = localStorage.getItem('app_user_name') || 'User';
+        db.ref('projectComments/' + currentCommentProjectId).push({
+            name, text, userId, time: Date.now()
+        }).then(() => {
+            document.getElementById('commentInput').value = '';
+            incrementProjectCounter(currentCommentProjectId, 'commentCount');
+            loadComments(currentCommentProjectId);
+        });
+    }
+
+    function pickImage(inputId) {
+        const input = document.getElementById(inputId);
+        if(input) input.click();
+    }
+
+    function handleImagePick(event, targetId, previewId) {
+        const file = event.target.files && event.target.files[0];
+        if(!file) return;
+        compressImage(file, 900, 0.78).then(dataUrl => {
+            document.getElementById(targetId).value = dataUrl;
+            const preview = document.getElementById(previewId);
+            preview.src = dataUrl;
+            preview.style.display = 'block';
+        }).catch(() => alert('Image select failed. Please try another image.'));
+    }
+
+    function compressImage(file, maxSize, quality) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = new Image();
+                img.onload = () => {
+                    let w = img.width, h = img.height;
+                    if(w > h && w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize; }
+                    else if(h >= w && h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize; }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function formatBytes(bytes) {
+        bytes = Number(bytes);
+        if(!bytes || bytes < 1) return '';
+        const units = ['B','KB','MB','GB'];
+        let i = 0;
+        while(bytes >= 1024 && i < units.length - 1) { bytes /= 1024; i++; }
+        return `${bytes.toFixed(bytes >= 10 || i === 0 ? 0 : 2)}${units[i]}`;
+    }
+
+    async function getRemoteFileSize(url) {
+        if(!url) return '';
+        try {
+            const res = await fetch(url, { method: 'HEAD', cache: 'no-store' });
+            const len = res.headers.get('content-length');
+            return len ? formatBytes(parseInt(len, 10)) : '';
+        } catch(e) { return ''; }
+    }
+
+    async function refreshAutoFileSize(project) {
+        if(!project || !project.id || !project.downloadUrl) return;
+        const oldSize = getProjectField(project, ['size', 'fileSize', 'fileSizeAuto'], '');
+        if(oldSize && oldSize !== 'Auto' && oldSize !== 'N/A') return;
+        const size = await getRemoteFileSize(project.downloadUrl);
+        if(size) {
+            setText('dSize', size);
+            db.ref('projects/' + project.id + '/size').set(size);
+        }
+    }
+
+
+    function setText(id, value, fallback = "-") {
+        const el = document.getElementById(id);
+        if(el) el.innerText = (value !== undefined && value !== null && value !== "") ? value : fallback;
+    }
+
+    function getProjectField(p, names, fallback = "") {
+        for(const name of names) {
+            if(p[name] !== undefined && p[name] !== null && p[name] !== "") return p[name];
+        }
+        return fallback;
+    }
+
+    function openDetails(p) {
+        pushBackState();
+        currentActiveProject = p; isUnlocked = false;
+        document.getElementById('details-view').style.display = 'block';
+        document.getElementById('dImg').src = p.img || '';
+        setText('dTitle', p.title);
+        setText('dCat', p.category);
+        setText('dSoftware', getProjectField(p, ['software', 'requiredSoftware'], 'N/A'));
+        const sizeValue = getProjectField(p, ['size', 'fileSize', 'fileSizeAuto'], 'Auto');
+        setText('dSize', sizeValue || 'Auto');
+        setText('dFormat', getProjectField(p, ['fileFormat', 'format'], '.PLP'));
+        setText('dPrice', p.price > 0 ? "৳" + p.price : "Free");
+        setText('dLicense', getProjectField(p, ['license', 'usage', 'usageType'], 'N/A'));
+        setText('dPublished', formatDateValue(getProjectField(p, ['publishedAt', 'publishedDate', 'published', 'releaseDate'], ''), 'N/A'));
+        setText('dUpdated', formatDateValue(getProjectField(p, ['updatedAt', 'updatedDate', 'lastUpdated', 'updated'], ''), 'N/A'));
+        const nextViews = getCount(getProjectField(p, ['viewCount', 'views'], 0)) + 1;
+        setText('dDownloads', formatFullCount(getProjectField(p, ['downloadCount', 'downloads', 'totalDownloads'], 0)));
+        setText('dViews', formatFullCount(nextViews));
+        setText('dLikes', formatFullCount(getProjectField(p, ['likeCount', 'likes'], 0)));
+        setText('dComments', formatFullCount(getProjectField(p, ['commentCount', 'commentsCount'], 0)));
+        if(p.id) incrementProjectCounter(p.id, 'viewCount');
+        const siteNameEl = document.getElementById('siteName');
+        const defaultOwnerName = (siteNameEl && siteNameEl.innerText) ? siteNameEl.innerText : 'File Owner';
+        const defaultOwnerRole = getProjectField(p, ['software', 'requiredSoftware'], 'File Creator');
+        setText('dOwnerName', getProjectField(p, ['ownerName', 'fileOwnerName', 'creatorName', 'designerName', 'developerName'], defaultOwnerName));
+        setText('dOwnerRole', getProjectField(p, ['ownerRole', 'ownerTitle', 'creatorRole', 'role'], defaultOwnerRole));
+        setText('dOwnerInfo', getProjectField(p, ['ownerInfo', 'ownerBio', 'creatorInfo', 'aboutOwner'], 'Owner details not added yet.'));
+        
+        // Social Link Handling
+        document.getElementById('dFb').href = p.fbLink || "https://www.facebook.com/morad.hasan.905911";
+        document.getElementById('dTg').href = p.tgLink || "https://t.me/moradhasan100";
+        document.getElementById('dYt').href = p.tutorialUrl || "#";
+        document.getElementById('dIg').href = p.igLink || "#";
+        
+        const contact = getProjectField(p, ['ownerContact', 'ownerPhone', 'contactNumber'], '');
+        const contactEl = document.getElementById('dOwnerContact');
+        const contactText = document.getElementById('dOwnerContactText');
+        if(contact) {
+            contactText.innerText = contact;
+            contactEl.href = 'tel:' + contact;
+            contactEl.classList.remove('hidden');
+        } else {
+            contactEl.classList.add('hidden');
+        }
+        const ownerImg = document.getElementById('dOwnerImg');
+        const ownerIcon = document.getElementById('dOwnerIcon');
+        const ownerPhoto = getProjectField(p, ['ownerPhoto', 'ownerPhotoUrl', 'ownerImage', 'ownerImageUrl', 'creatorPhoto']);
+        if(ownerPhoto) {
+            ownerImg.src = ownerPhoto;
+            ownerImg.classList.remove('hidden');
+            ownerIcon.classList.add('hidden');
+            ownerImg.onerror = function() { ownerImg.classList.add('hidden'); ownerIcon.classList.remove('hidden'); };
+        } else {
+            ownerImg.removeAttribute('src');
+            ownerImg.classList.add('hidden');
+            ownerIcon.classList.remove('hidden');
+        }
+        document.getElementById('captchaCheck').checked = false;
+        document.getElementById('captchaCheck').disabled = false;
+        document.getElementById('timerText').innerText = "";
+        document.getElementById('finalLink').style.display = "none";
+        document.getElementById('captcha-section').classList.add('hidden');
+        document.getElementById('dActionBtn').classList.remove('hidden');
+        const tBtn = document.getElementById('dTutorBtn');
+        if(p.tutorialUrl) { tBtn.classList.remove('hidden'); tBtn.onclick = () => window.open(p.tutorialUrl, '_blank'); }
+        else { tBtn.classList.add('hidden'); }
+        const dBox = document.getElementById('dDescBox');
+        if(p.description) { document.getElementById('dDescText').innerText = p.description; dBox.classList.remove('hidden'); }
+        else { dBox.classList.add('hidden'); }
+        updateDownloadBtn();
+        refreshAutoFileSize(p);
+        window.scrollTo(0,0);
+    }
+
+
+    function updateDownloadBtn() {
+        const btn = document.getElementById('dActionBtn');
+        const isPremium = currentActiveProject.price > 0 || currentActiveProject.category === "Premium";
+        if(isPremium && !isUnlocked) {
+            btn.innerHTML = `<i class="fa-solid fa-crown"></i> Unlock Premium File`;
+            btn.style.background = "var(--premium-color)";
+            btn.onclick = () => openModal('paymentModal');
+        } else {
+            btn.innerHTML = `<i class="fa-solid fa-download"></i> Download Project Now`;
+            btn.style.background = "var(--accent-color)";
+            btn.onclick = () => { btn.classList.add('hidden'); document.getElementById('captcha-section').classList.remove('hidden'); };
+        }
+    }
+
+    function startTimer() {
+        document.getElementById('captchaCheck').disabled = true;
+        let time = 14;
+        const txt = document.getElementById('timerText');
+        const link = document.getElementById('finalLink');
+        txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`;
+        const itv = setInterval(() => {
+            time--;
+            if(time > 0) { txt.innerText = `দয়া করে ${time} সেকেন্ড অপেক্ষা করুন...`; }
+            else { clearInterval(itv); txt.innerText = "আপনার লিঙ্ক তৈরি!"; link.style.display = "block"; }
+        }, 1000);
+    }
+
+    function handleDownload() {
+        if(currentActiveProject && currentActiveProject.id) incrementProjectCounter(currentActiveProject.id, 'downloadCount');
+        if(currentActiveProject && currentActiveProject.downloadUrl) window.open(currentActiveProject.downloadUrl, '_blank');
+    }
+    function verifyCode() {
+        const code = document.getElementById('secretCode').value.trim();
+        if(currentActiveProject.secretCode && code.toLowerCase() === currentActiveProject.secretCode.toString().toLowerCase()) {
+            isUnlocked = true; closeModal('paymentModal'); updateDownloadBtn();
+        } else { alert("ভুল কোড!"); }
+    }
+
+    function sendTelegramMsg() {
+        const n = document.getElementById('userName').value;
+        const m = document.getElementById('userMsg').value;
+        if(!n || !m) return alert("সব তথ্য দিন!");
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: `📩 Support Request:\nName: ${n}\nMessage: ${m}` })
+        }).then(res => { if(res.ok) { alert("পাঠানো হয়েছে!"); closeModal('chatModal'); } });
+    }
+
+    function filterCategory(cat, btn) {
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cards = document.querySelectorAll('.card');
+        projects.forEach((p, i) => { cards[i].style.display = (cat === 'all' || p.category === cat) ? "block" : "none"; });
+    }
+
+    function filterItems() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.card');
+        projects.forEach((p, i) => { cards[i].style.display = p.title.toLowerCase().includes(q) ? "block" : "none"; });
+    }
+
+    function toggleTheme() {
+        const b = document.body;
+        if(b.getAttribute('data-theme') === 'dark') b.setAttribute('data-theme', 'light');
+        else b.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', b.getAttribute('data-theme'));
+    }
+
     function showHome() { document.getElementById('details-view').style.display = 'none'; }
     function toggleDrawer(open) { if(open) pushBackState(); document.getElementById('navDrawer').classList.toggle('active', open); document.getElementById('drawerOverlay').classList.toggle('active', open); }
     function openChat() { toggleDrawer(false); openModal('chatModal'); }
@@ -548,18 +1064,69 @@
     function openModal(id) { pushBackState(); document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function closeUpdateDialog() { document.getElementById('updateOverlay').style.display = 'none'; }
-    function saveNewResource() { const p = { title: document.getElementById('addTitle').value, description: document.getElementById('addDesc').value, category: document.getElementById('addCat').value, img: document.getElementById('addThumb').value, size: document.getElementById('addSize').value, price: parseInt(document.getElementById('addPrice').value) || 0, downloadUrl: document.getElementById('addDL').value, tutorialUrl: document.getElementById('addTutor').value, software: document.getElementById('addSoft').value, fileFormat: document.getElementById('addFormat').value, secretCode: Math.floor(1000 + Math.random() * 9000) }; db.ref('projects').push(p).then(() => { alert("Added!"); closeModal('addResourceModal'); }); }
+
+    async function saveNewResource() {
+        const title = document.getElementById('addTitle').value.trim();
+        const downloadUrl = document.getElementById('addDL').value.trim();
+        const thumb = document.getElementById('addThumb').value;
+        if(!title) return alert('File title দিন!');
+        if(!thumb) return alert('Thumbnail image select করুন!');
+        const autoSize = await getRemoteFileSize(downloadUrl);
+        const p = {
+            title: title,
+            description: document.getElementById('addDesc').value,
+            category: document.getElementById('addCat').value,
+            img: thumb,
+            ownerName: document.getElementById('addOwnerName').value,
+            ownerPhoto: document.getElementById('addOwnerPhoto').value,
+            ownerRole: document.getElementById('addOwnerRole').value,
+            ownerContact: document.getElementById('addOwnerContact').value,
+            ownerInfo: document.getElementById('addOwnerInfo').value,
+            fbLink: document.getElementById('addFb').value || "https://www.facebook.com/morad.hasan.905911",
+            tgLink: document.getElementById('addTg').value || "https://t.me/moradhasan100",
+            igLink: document.getElementById('addIg').value,
+            size: autoSize || 'Auto',
+            price: parseInt(document.getElementById('addPrice').value) || 0,
+            downloadUrl: downloadUrl,
+            tutorialUrl: document.getElementById('addTutor').value,
+            software: document.getElementById('addSoft').value,
+            fileFormat: document.getElementById('addFormat').value,
+            license: document.getElementById('addLicense').value,
+            publishedDate: document.getElementById('addPublished').value || todayText(),
+            publishedAt: firebase.database.ServerValue.TIMESTAMP,
+            updatedAt: firebase.database.ServerValue.TIMESTAMP,
+            downloadCount: 0,
+            viewCount: 0,
+            likeCount: 0,
+            commentCount: 0,
+            secretCode: Math.floor(1000 + Math.random() * 9000)
+        };
+        db.ref('projects').push(p).then(() => {
+            alert('Added!');
+            closeModal('addResourceModal');
+            clearAddForm();
+        });
+    }
+
+    function clearAddForm() {
+        ['addTitle','addDesc','addThumb','addOwnerName','addOwnerPhoto','addOwnerRole','addOwnerContact','addOwnerInfo','addDL','addTutor','addLicense','addPublished','addFb','addTg','addIg'].forEach(id => {
+            const el = document.getElementById(id); if(el) el.value = '';
+        });
+        document.getElementById('addPrice').value = 0;
+        document.getElementById('thumbPreview').style.display = 'none';
+        document.getElementById('ownerPhotoPreview').style.display = 'none';
+    }
 
     // ==========================================
-    // IN-APP ASSISTANT SYSTEM (SMART ROBOT)
+    // IN-APP ASSISTANT SYSTEM (SMART ROBOT) - POWER UP
     // ==========================================
 
-    const adminMsgs = [
-        "আসসালামু আলাইকুম, আমার এই অ্যাপ থেকে কিছু ফাইল ডাউনলোড করতে সমস্যা হচ্ছে। দয়া করে সমাধান দিলে উপকৃত হতাম।",
-        "আমি একটি ফাইল কিনবো ভাবছি কিন্তু পেমেন্ট প্রসেসটা ঠিক বুঝতে পারছি না। সাহায্য প্রয়োজন।",
-        "অ্যাপ এর ফিচারগুলো অনেক সুন্দর। আমি নিয়মিত ইউজার। ধন্যবাদ আপনাকে সুন্দর সার্ভিস দেয়ার জন্য।",
-        "প্রিয় এডমিন, আমার ডাউনলোড করা ফাইলে কোড চাচ্ছে কিন্তু আমি কোডটা খুঁজে পাচ্ছি না।",
-        "আমি আপনার তৈরি সব প্রোজেক্ট এর অনেক বড় ফ্যান। আরও নতুন নতুন ফাইল এড করলে ভালো হয়।"
+    const adminLongMessages = [
+        "আসসালামু আলাইকুম প্রিয় এডমিন ভাই! 🌟 আশা করি আপনি ভালো আছেন। আপনার এই স্টোর থেকে আমি নিয়মিত প্রিমিয়াম ফাইলগুলো ডাউনলোড করি এবং এগুলো আমার প্রফেশনাল কাজে অনেক সাহায্য করে। ❤️ তবে আজ একটি প্রোজেক্ট ডাউনলোড করার পর গোপন কোডটি মিলাতে পারছি না, দয়া করে একটু চেক করে দেখবেন কি? আপনার সুন্দর এবং দ্রুত সার্ভিসের জন্য আমি সবসময় কৃতজ্ঞ। 🛠️ ধন্যবাদ!",
+        "শুভকামনা জানবেন এডমিন! 🚀 আপনার তৈরি এই অসাধারণ অ্যান্ড্রয়েড সোর্স কোড স্টোরটি আমাদের মতো ডেভেলপারদের জন্য অনেক বড় একটি আশীর্বাদ। আমি আপনার প্রিমিয়াম কাজগুলোর অনেক বড় ফ্যান। 😍 আমি বিশেষ অনুরোধ জানাচ্ছি যদি সম্ভব হয় ভবিষ্যতে আরও কিছু মডার্ন ওয়েব ডিজাইন সোর্স কোড এখানে যুক্ত করবেন। আপনার এই মহান উদ্যোগকে আমি সবসময় সাপোর্ট দিয়ে যাবো। 🎁 সাথে আছি সব সময়!",
+        "প্রিয় এডমিন ভাই, আপনার অ্যাপ এর ইন্টারফেস এবং ডাউনলোড সিস্টেম এক কথায় অসাধারণ এবং অনেক ফাস্ট! ⚡ আমি ইতিপূর্বেও আপনার থেকে অনেকগুলো ফাইল নিয়েছি এবং সেগুলো নিখুঁতভাবে কাজ করেছে। আজকের একটি আপডেট ফাইলে আমি কিছু নতুন ফিচার এড করতে চাচ্ছিলাম, এ বিষয়ে যদি আপনার থেকে একটু পরামর্শ পেতাম তবে খুব ভালো হতো। 📱 আপনার মঙ্গল কামনা করি। ধন্যবাদ!",
+        "আসসালামু আলাইকুম, আমি আপনার স্টোরের একজন নিয়মিত ইউজার। 👑 আপনার কাজগুলো অনেক হাই-কোয়ালিটি সম্পন্ন এবং ইউজার ফ্রেন্ডলি হয়। আমি আপনার এই প্ল্যাটফর্মটি আমার বন্ধুদের সাথেও শেয়ার করেছি এবং তারা সবাই এটি খুব পছন্দ করেছে। 🎨 আমার পেমেন্ট গেটওয়ে নিয়ে সামান্য একটি প্রশ্ন ছিল, দয়া করে ফ্রি হয়ে আমাকে একটু রিপ্লাই দিলে অনেক উপকৃত হতাম। ❤️ শুভকামনা!",
+        "এডমিন ভাই, আপনার তৈরি সোর্স কোডগুলো ব্যবহার করে আমি অনেক নতুন কিছু শিখতে পেরেছি। 🌟 আপনার এই অক্লান্ত পরিশ্রমের ফসল আমাদের মতো নতুনদের জন্য অনেক পথপ্রদর্শক। বিশেষ করে প্রিমিয়াম প্রোজেক্টগুলো অনেক কম মূল্যে দেয়ার জন্য আপনাকে অনেক ধন্যবাদ। 💎 আমি সবসময় আপনার নতুন নতুন আপডেটের অপেক্ষায় থাকি। এগিয়ে যান ভাই, আমরা আপনার পাশেই আছি! 🔥"
     ];
 
     function openAssistantChat() {
@@ -576,19 +1143,13 @@
         input.value = "";
 
         if(text.includes('মেসেজ') || text.includes('admin') || text.includes('এডমিন')) {
-            addChatBubble('ঠিক আছে, আমি এডমিনকে একটি মেসেজ পাঠিয়ে দিচ্ছি। একটু অপেক্ষা করুন...', 'bot');
-            setTimeout(() => {
-                closeModal('assistantModal');
-                taskSendAdminMessage();
-            }, 1500);
+            addChatBubble('ঠিক আছে, আমি এডমিনকে একটি সুন্দর এবং বিস্তারিত মেসেজ পাঠিয়ে দিচ্ছি। একটু অপেক্ষা করুন... ⏳', 'bot');
+            setTimeout(() => { closeModal('assistantModal'); taskAutoSendSupport(); }, 1500);
         } else if(text.includes('ফাইল এড') || text.includes('কিভাবে') || text.includes('add file')) {
-            addChatBubble('অবশ্যই! আমি আপনাকে দেখাচ্ছি কীভাবে একটি ফাইল অ্যাড করতে হয়। প্রসেসটি খেয়াল করুন...', 'bot');
-            setTimeout(() => {
-                closeModal('assistantModal');
-                taskAddFileDemo();
-            }, 1500);
+            addChatBubble('অবশ্যই! আমি আপনাকে প্রতিটি ঘর বাংলায় নিখুঁতভাবে পূর্ণ করে ফাইল এড করার প্রসেসটি দেখাচ্ছি। ধাপগুলো দেখুন... ✨', 'bot');
+            setTimeout(() => { closeModal('assistantModal'); taskAutoAddFile(); }, 1500);
         } else {
-            addChatBubble('দুঃখিত, আমি আপনার কথা বুঝতে পারিনি। দয়া করে বলুন "এডমিনকে মেসেজ দাও" অথবা "কিভাবে ফাইল এড করতে হয়?"', 'bot');
+            addChatBubble('দুঃখিত, আমি আপনার কথা বুঝতে পারিনি। 🤖 দয়া করে বলুন "এডমিনকে মেসেজ দাও" অথবা "কিভাবে ফাইল এড করতে হয়?"', 'bot');
         }
     }
 
@@ -601,85 +1162,117 @@
         log.scrollTop = log.scrollHeight;
     }
 
-    async function taskSendAdminMessage() {
-        const name = localStorage.getItem('app_user_name') || "User";
-        const msg = adminMsgs[Math.floor(Math.random() * adminMsgs.length)];
+    async function taskAutoSendSupport() {
+        const name = localStorage.getItem('app_user_name') || "ইউজার";
+        const msg = adminLongMessages[Math.floor(Math.random() * adminLongMessages.length)];
 
         await moveAndClick('main-menu-btn');
-        await sleep(800);
+        await sleep(1000);
         await moveAndClick('nav-support');
-        await sleep(800);
+        await sleep(1000);
         
-        const nameInput = document.getElementById('userName');
-        const msgInput = document.getElementById('userMsg');
+        const nInput = document.getElementById('userName');
+        const mInput = document.getElementById('userMsg');
         
-        await smoothType(nameInput, name);
-        await sleep(500);
-        await smoothType(msgInput, msg);
-        await sleep(500);
+        await smoothType(nInput, name);
+        await sleep(700);
+        await smoothType(mInput, msg);
+        await sleep(1000);
         await moveAndClick('sendSupportBtn');
         
         hidePointer();
     }
 
-    async function taskAddFileDemo() {
+    async function taskAutoAddFile() {
         const fab = document.getElementById('add-fab-btn');
         if(fab.classList.contains('hidden')) {
-            alert("সরি, এই ফিচারে আপনার অনুমতি নেই।");
+            alert("সরি, এই ফিচারে আপনার অ্যাক্সেস নেই।");
             return;
         }
 
         const imgLink = "https://files.catbox.moe/gw83yw.png";
         
         await moveAndClick('add-fab-btn');
-        await sleep(1000);
+        await sleep(1200);
 
-        await smoothType(document.getElementById('addTitle'), "Smart Assistant Demo Project");
-        await smoothType(document.getElementById('addDesc'), "This is an automated demo project added by the smart assistant robot.");
-        await smoothType(document.getElementById('addThumb'), imgLink);
-        await smoothType(document.getElementById('addSize'), "12.5 MB");
-        await smoothType(document.getElementById('addDL'), imgLink);
+        // All Inputs Filling with Emojis and Bangla descriptions
+        await smoothType(document.getElementById('addTitle'), "স্মার্ট অ্যান্ড্রয়েড প্রিমিয়াম প্রোজেক্ট - ২০২৬ 📱");
+        await smoothType(document.getElementById('addDesc'), "এই ফাইলটি অত্যন্ত আধুনিক এবং প্রফেশনাল ভাবে ডিজাইন করা হয়েছে। 🛠️ এতে রয়েছে ইউজার ফ্রেন্ডলি ইন্টারফেস এবং চমৎকার সব ফিচার যা আপনার কাজকে আরও সহজ করে তুলবে। আপনারা নিশ্চিন্তে এটি ব্যবহার করতে পারেন। ✨");
         
-        await sleep(800);
+        // Category Selection
+        const catSelect = document.getElementById('addCat');
+        if(catSelect.options.length > 0) catSelect.selectedIndex = 0;
+        
+        // Thumb and Photos
+        document.getElementById('addThumb').value = imgLink;
+        document.getElementById('addOwnerPhoto').value = imgLink;
+        
+        await smoothType(document.getElementById('addOwnerName'), "মোঃ মুরাদ হাসান 👑");
+        await smoothType(document.getElementById('addOwnerRole'), "গ্রাফিক ডিজাইনার এবং অ্যাপ ডেভেলপার 🎨");
+        await smoothType(document.getElementById('addOwnerContact'), "01953051602");
+        await smoothType(document.getElementById('addOwnerContact2'), "01800000000");
+        await smoothType(document.getElementById('addOwnerContact3'), "01900000000");
+        await smoothType(document.getElementById('addOwnerContact4'), "01500000000");
+        
+        // Assistant Auto Social Links
+        await smoothType(document.getElementById('addFb'), "https://www.facebook.com/morad.hasan.905911");
+        await smoothType(document.getElementById('addTg'), "https://t.me/moradhasan100");
+        await smoothType(document.getElementById('addIg'), "https://instagram.com/morad_hasan");
+        
+        await smoothType(document.getElementById('addOwnerInfo'), "মুরাদ হাসান ভাই হলেন একজন অত্যন্ত দক্ষ ক্রিয়েটর এবং ডেভেলপার। 🌟 তিনি দীর্ঘ সময় ধরে আপনাদের সেবায় হাই-কোয়ালিটি সম্পন্ন প্রিমিয়াম রিসোর্স প্রদান করে আসছেন। উনার নিখুঁত কাজ এবং দ্রুত রেসপন্স সবাইকে মুগ্ধ করে। উনাকে ফলো করুন এবং সবসময় পাশে থাকুন যেন তিনি আরও চমৎকার প্রোজেক্ট আমাদের উপহার দিতে পারেন। ❤️");
+        
+        await smoothType(document.getElementById('addPrice'), "150");
+        await smoothType(document.getElementById('addDL'), imgLink);
+        await smoothType(document.getElementById('addTutor'), "https://youtube.com/@holystudio602?si=2myanLGZ9-adzj9V");
+        await smoothType(document.getElementById('addSoft'), "পিক্সেলল্যাব (PixelLab) 🖌️");
+        await smoothType(document.getElementById('addFormat'), ".PLP প্রোজেক্ট ফাইল 📂");
+        await smoothType(document.getElementById('addLicense'), "পার্সোনাল এবং কমার্শিয়াল ব্যবহারযোগ্য ✅");
+        await smoothType(document.getElementById('addPublished'), "আজকে প্রকাশিত হয়েছে 📅");
+
+        await sleep(1200);
         await moveAndClick('submitAddBtn');
         hidePointer();
     }
 
-    // Helper functions for Assistant
     async function moveAndClick(id) {
         const el = document.getElementById(id);
         const rect = el.getBoundingClientRect();
         const ptr = document.getElementById('assistant-pointer');
-        
         ptr.style.display = 'block';
         ptr.style.top = (rect.top + rect.height/2) + 'px';
         ptr.style.left = (rect.left + rect.width/2) + 'px';
-        
-        await sleep(800);
+        await sleep(1000);
         el.click();
     }
 
     async function smoothType(el, text) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        await sleep(600);
         const rect = el.getBoundingClientRect();
         const ptr = document.getElementById('assistant-pointer');
         ptr.style.top = (rect.top + rect.height/2) + 'px';
         ptr.style.left = (rect.left + rect.width/2) + 'px';
-        
         el.value = "";
         for(let char of text) {
             el.value += char;
-            await sleep(30);
+            await sleep(35);
         }
-        await sleep(300);
+        await sleep(400);
     }
 
-    function hidePointer() {
-        document.getElementById('assistant-pointer').style.display = 'none';
-    }
-
+    function hidePointer() { document.getElementById('assistant-pointer').style.display = 'none'; }
     function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 </script>
-  </body>
+  
+<script>
+let selectedPaymentMethod = 'bkash';
+function setPaymentMethod(m){
+  selectedPaymentMethod = m;
+  document.querySelectorAll('.pm-item').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
 </html>
